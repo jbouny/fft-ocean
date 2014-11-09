@@ -103,6 +103,8 @@
 					this.ms_Controls.minPolarAngle = 0;
 					this.ms_Controls.maxPolarAngle = Math.PI * 0.495;
 					
+					this.LoadSkyBox();
+					
 					var gsize = 512; 
 					var res = 512; 
 					var gres = res / 2;
@@ -117,8 +119,8 @@
 						GEOMETRY_ORIGIN : [origx, origz],
 						SUN_DIRECTION : [-1.0, 1.0, 1.0],
 						OCEAN_COLOR: new THREE.Vector3(0.004, 0.016, 0.047),
-						SKY_COLOR: new THREE.Vector3(3.2, 9.6, 12.8),
-						EXPOSURE : 0.35,
+						SKY_COLOR: new THREE.Vector3(10.0, 13.0, 15.0),
+						EXPOSURE : 0.15,
 						GEOMETRY_RESOLUTION: gres,
 						GEOMETRY_SIZE : gsize,
 						RESOLUTION : res
@@ -129,7 +131,7 @@
 					this.ms_Scene.add(this.ms_Ocean.oceanMesh);
 
 					var gui = new dat.GUI();
-					var c1 = gui.add(this.ms_Ocean, "size",100, 5000);
+					var c1 = gui.add(this.ms_Ocean, "size", 10, 5000);
 					c1.onChange(function(v) {
 						this.object.size = v;
 						this.object.changed = true;
@@ -139,7 +141,7 @@
 						this.object.choppiness = v;
 						this.object.changed = true;
 					});
-					var c3 = gui.add(this.ms_Ocean, "windX",-15, 15);
+					var c3 = gui.add(this.ms_Ocean, "windX", -15, 15);
 					c3.onChange(function (v) {
 						this.object.windX = v;
 						this.object.changed = true;
@@ -169,6 +171,36 @@
 						this.object.exposure = v;
 						this.object.changed = true;
 					});
+				},
+	
+				LoadSkyBox: function LoadSkyBox() {
+					var aCubeMap = THREE.ImageUtils.loadTextureCube([
+					  'img/grimmnight_west.jpg',
+					  'img/grimmnight_east.jpg',
+					  'img/grimmnight_up.jpg',
+					  'img/grimmnight_down.jpg',
+					  'img/grimmnight_south.jpg',
+					  'img/grimmnight_north.jpg',
+					]);
+					aCubeMap.format = THREE.RGBFormat;
+
+					var aShader = THREE.ShaderLib['cube'];
+					aShader.uniforms['tCube'].value = aCubeMap;
+
+					var aSkyBoxMaterial = new THREE.ShaderMaterial({
+					  fragmentShader: aShader.fragmentShader,
+					  vertexShader: aShader.vertexShader,
+					  uniforms: aShader.uniforms,
+					  depthWrite: false,
+					  side: THREE.BackSide
+					});
+
+					var aSkybox = new THREE.Mesh(
+					  new THREE.BoxGeometry(100000, 100000, 100000),
+					  aSkyBoxMaterial
+					);
+					
+					this.ms_Scene.add(aSkybox);
 				},
 				
 				Display: function () {

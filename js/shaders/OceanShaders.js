@@ -373,21 +373,24 @@ THREE.ShaderLib['ocean_main'] = {
 		'vec3 hdr (vec3 color, float exposure) {',
 			'return 1.0 - exp(-color * exposure);',
 		'}',
+		
+		THREE.ShaderChunk["screenplane_pars_fragment"],
 
 		'void main (void) {',
 			'vec3 normal = texture2D(u_normalMap, vPos.xz * 0.003).rgb;',
 
 			'vec3 view = normalize(u_cameraPosition - vPos);',
 			'float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);',
-			'vec3 sky = fresnel * u_skyColor;',
+			'vec3 sky = 0.15 * fresnel * u_skyColor;',
 
 			'float diffuse = clamp(dot(normal, normalize(u_sunDirection)), 0.0, 1.0);',
 			'vec3 water = (1.0 - fresnel) * u_oceanColor * u_skyColor * diffuse;',
 
 			'vec3 color = sky + water;',
+			'float distanceRatio = log( 1.0 / length( vWorldPosition ) * 10000.0 + 1.0 );',
+			'color = color * min( 1.0, distanceRatio );',
 
 			'gl_FragColor = vec4(hdr(color, u_exposure), 1.0);',
-			//'gl_FragColor = vec4(1.0,0.0,0.0,1.0);',
 		'}'
 	].join('\n')
 };
