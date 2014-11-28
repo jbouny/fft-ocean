@@ -44,50 +44,29 @@
 	this.matrixNeedsUpdate = false;
 	
 	// Setup framebuffer pipeline
-	var LinearClampParams = {
-		minFilter: THREE.LinearFilter,
-		magFilter: THREE.LinearFilter,
-		wrapS: THREE.ClampToEdgeWrapping,
-		wrapT: THREE.ClampToEdgeWrapping,
+	var BaseParams = {
 		format: THREE.RGBAFormat,
 		stencilBuffer: false,
 		depthBuffer: false,
 		premultiplyAlpha: false,
 		type: THREE.FloatType
 	};
-	var NearestClampParams = {
-		minFilter: THREE.NearestFilter,
-		magFilter: THREE.NearestFilter,
-		wrapS: THREE.ClampToEdgeWrapping,
-		wrapT: THREE.ClampToEdgeWrapping,
-		format: THREE.RGBAFormat,
-		stencilBuffer: false,
-		depthBuffer: false,
-		premultiplyAlpha:false,
-		type: THREE.FloatType
-	};
-	var NearestRepeatParams = {
-		minFilter: THREE.NearestFilter,
-		magFilter: THREE.NearestFilter,
-		wrapS: THREE.RepeatWrapping,
-		wrapT: THREE.RepeatWrapping,
-		format: THREE.RGBAFormat,
-		stencilBuffer: false,
-		depthBuffer: false,
-		premultiplyAlpha: false,
-		type: THREE.FloatType
-	};
-	var LinearRepeatParams = {
-		minFilter: THREE.LinearFilter,
-		magFilter: THREE.LinearFilter,
-		wrapS: THREE.RepeatWrapping,
-		wrapT: THREE.RepeatWrapping,
-		format: THREE.RGBAFormat,
-		stencilBuffer: false,
-		depthBuffer: false,
-		premultiplyAlpha: false,
-		type: THREE.FloatType
-	};
+	var LinearClampParams = JSON.parse(JSON.stringify(BaseParams));
+	LinearClampParams.minFilter = LinearClampParams.magFilter = THREE.LinearFilter ;
+	LinearClampParams.wrapS = LinearClampParams.wrapT = THREE.ClampToEdgeWrapping ;
+	
+	var NearestClampParams = JSON.parse(JSON.stringify(BaseParams));
+	NearestClampParams.minFilter = NearestClampParams.magFilter = THREE.NearestFilter ;
+	NearestClampParams.wrapS = NearestClampParams.wrapT = THREE.ClampToEdgeWrapping ;
+	
+	var NearestRepeatParams = JSON.parse(JSON.stringify(BaseParams));
+	NearestRepeatParams.minFilter = NearestRepeatParams.magFilter = THREE.NearestFilter ;
+	NearestRepeatParams.wrapS = NearestRepeatParams.wrapT = THREE.RepeatWrapping ;
+	
+	var LinearRepeatParams = JSON.parse(JSON.stringify(BaseParams));
+	LinearRepeatParams.minFilter = LinearRepeatParams.magFilter = THREE.LinearFilter ;
+	LinearRepeatParams.wrapS = LinearRepeatParams.wrapT = THREE.RepeatWrapping ;
+	
 	this.initialSpectrumFramebuffer = new THREE.WebGLRenderTarget(this.resolution, this.resolution, NearestRepeatParams);
 	this.spectrumFramebuffer = new THREE.WebGLRenderTarget(this.resolution, this.resolution, NearestClampParams);
 	this.pingPhaseFramebuffer = new THREE.WebGLRenderTarget(this.resolution, this.resolution, NearestClampParams);

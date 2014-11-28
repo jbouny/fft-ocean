@@ -18,19 +18,6 @@ THREE.MirrorRenderer = function (renderer, camera, scene, options) {
 	
 	var width = optionalParameter(options.textureWidth, 512);
 	var height = optionalParameter(options.textureHeight, 512);
-	this.clipBias = optionalParameter(options.clipBias, -0.0001);
-	this.alpha = optionalParameter(options.alpha, 1.0);
-	this.time = optionalParameter(options.time, 0.0);
-	this.normalSampler = optionalParameter(options.waterNormals, null);
-	this.sunDirection = optionalParameter(options.sunDirection, new THREE.Vector3(0.70707, 0.70707, 0.0));
-	this.sunColor = new THREE.Color(optionalParameter(options.sunColor, 0xffffff));
-	this.waterColor = new THREE.Color(optionalParameter(options.waterColor, 0x7F7F7F));
-	this.eye = optionalParameter(options.eye, new THREE.Vector3(0, 0, 0));
-	this.distortionScale = optionalParameter(options.distortionScale, 20.0);
-	this.noiseScale = optionalParameter(options.noiseScale, 1.0);
-	this.betaVersion = optionalParameter(options.betaVersion, 0);
-	this.side = optionalParameter(options.side, THREE.FrontSide);
-	this.fog = optionalParameter(options.fog, false);
 	
 	this.renderer = renderer;
 	this.scene = scene;
@@ -69,9 +56,9 @@ THREE.MirrorRenderer = function (renderer, camera, scene, options) {
 	this.render();
 };
 
-THREE.Water.prototype = Object.create(THREE.Object3D.prototype);
+THREE.MirrorRenderer.prototype = Object.create(THREE.Object3D.prototype);
 
-THREE.Water.prototype.updateTextureMatrix = function () {
+THREE.MirrorRenderer.prototype.updateTextureMatrix = function () {
 
 	function sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
 
@@ -156,7 +143,7 @@ THREE.Water.prototype.updateTextureMatrix = function () {
 	this.eye = worldCoordinates;
 };
 
-THREE.Water.prototype.render = function () {
+THREE.MirrorRenderer.prototype.render = function () {
 
 	if(this.matrixNeedsUpdate)
 		this.updateTextureMatrix();
