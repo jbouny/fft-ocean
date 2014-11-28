@@ -18,6 +18,8 @@ THREE.MirrorRenderer = function (renderer, camera, scene, options) {
 	
 	var width = optionalParameter(options.textureWidth, 512);
 	var height = optionalParameter(options.textureHeight, 512);
+	this.clipBias = optionalParameter(options.clipBias, -0.0001);
+	this.clipBias = optionalParameter(options.clipBias, -0.1);
 	
 	this.renderer = renderer;
 	this.scene = scene;
@@ -42,9 +44,6 @@ THREE.MirrorRenderer = function (renderer, camera, scene, options) {
 	
 	this.texture = new THREE.WebGLRenderTarget(width, height);
 	this.tempTexture = new THREE.WebGLRenderTarget(width, height);
-	
-	var mirrorShader = THREE.ShaderLib["water"];
-	var mirrorUniforms = THREE.UniformsUtils.clone(mirrorShader.uniforms);
 	
 	if (!isPowerOfTwo(width) || !isPowerOfTwo(height)) 
 	{
@@ -71,7 +70,7 @@ THREE.MirrorRenderer.prototype.updateTextureMatrix = function () {
 	this.rotationMatrix.extractRotation(this.matrixWorld);
 
 	if( this.mirrorWorldPosition.y > this.cameraWorldPosition.y ) {
-		this.normal.set(0, 0, -1);
+		this.normal.set(0, 0, 1);
 	}
 	else {
 		this.normal.set(0, 0, 1);

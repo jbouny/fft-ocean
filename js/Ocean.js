@@ -15,6 +15,9 @@
 	this.renderer.context.getExtension('OES_texture_float');
 	this.renderer.context.getExtension('OES_texture_float_linear');
 	
+	// Create mirror rendering
+	this.mirror = new THREE.MirrorRenderer( renderer, camera, scene ) ;
+	
 	// Assign optional parameters as variables and object properties
 	function optionalParameter(value, defaultValue) {
 		return value !== undefined ? value : defaultValue;
@@ -163,11 +166,15 @@
 		attributes: oceanAttributes,
 		uniforms: oceanUniforms,
 		vertexShader: oceanShader.vertexShader,
-		fragmentShader: oceanShader.fragmentShader
+		fragmentShader: oceanShader.fragmentShader,
+		side: THREE.FrontSide,
+		//wireframe: true
 	});
 	//this.materialOcean.wireframe = true;
 	this.materialOcean.uniforms.u_geometrySize = { type: "f", value: this.resolution };
 	this.materialOcean.uniforms.u_displacementMap = { type: "t", value: this.displacementMapFramebuffer };
+	this.materialOcean.uniforms.u_reflection = { type: "t", value: this.mirror.texture };
+	this.materialOcean.uniforms.u_mirrorMatrix = { type: "m4", value: this.mirror.textureMatrix };
 	this.materialOcean.uniforms.u_normalMap = { type: "t", value: this.normalMapFramebuffer }; 
 	this.materialOcean.uniforms.u_oceanColor = { type: "v3", value: this.oceanColor }; 
 	this.materialOcean.uniforms.u_skyColor = { type: "v3", value: this.skyColor };
@@ -210,6 +217,7 @@ THREE.Ocean.prototype.render = function () {
 	if (this.changed)
 		this.renderInitialSpectrum();
 	
+	this.mirror.render();
 	this.renderWavePhase();
 	this.renderSpectrum();
 	this.renderSpectrumFFT();

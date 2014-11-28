@@ -317,10 +317,12 @@ THREE.ShaderLib['ocean_normals'] = {
 THREE.ShaderLib['ocean_main'] = {
 	uniforms: {
 		"u_displacementMap": { type: "t", value: null },
+		"u_reflection": { type: "t", value: null },
 		"u_normalMap": { type: "t", value: null },
 		"u_geometrySize": { type: "f", value: null },
 		"u_size": { type: "f", value: null },
 		"u_projectionMatrix": { type: "m4", value: null },
+		"u_mirrorMatrix": { type: "m4", value: null },
 		"u_viewMatrix": { type: "m4", value: null },
 		"u_cameraPosition": { type: "v3", value: null },
 		"u_skyColor": { type: "v3", value: null },
@@ -337,22 +339,26 @@ THREE.ShaderLib['ocean_main'] = {
 		
 		'varying vec3 vPos;',
 		'varying vec2 vUV;',
+		'varying vec4 vReflectCoordinates;',
 
 		'uniform mat4 u_projectionMatrix;',
 		'uniform mat4 u_viewMatrix;',
 		'uniform float u_size;',
 		'uniform float u_geometrySize;',
 		'uniform sampler2D u_displacementMap;',
+		'uniform mat4 u_mirrorMatrix;',
 		
 		THREE.ShaderChunk["screenplane_pars_vertex"],
 
 		'void main (void) {',
 			THREE.ShaderChunk["screenplane_vertex"],
 			
+			
 			//'vec3 newPos = position + texture2D(u_displacementMap, position.xz * 0.002).rgb * (u_geometrySize / u_size);',
 			'vec3 newPos = vWorldPosition.xyz + texture2D(u_displacementMap, vWorldPosition.xz * 0.003).rgb * (u_geometrySize / u_size);',
 			'vPos = newPos;',
 			'vUV = uv;',
+			'vReflectCoordinates = u_mirrorMatrix * vec4(newPos, 1.0);',
 			'gl_Position = u_projectionMatrix * u_viewMatrix * vec4(newPos, 1.0);',
 		'}'
 	].join('\n'),
@@ -361,8 +367,10 @@ THREE.ShaderLib['ocean_main'] = {
 
 		'varying vec3 vPos;',
 		'varying vec2 vUV;',
+		'varying vec4 vReflectCoordinates;',
 
 		'uniform sampler2D u_displacementMap;',
+		'uniform sampler2D u_reflection;',
 		'uniform sampler2D u_normalMap;',
 		'uniform vec3 u_cameraPosition;',
 		'uniform vec3 u_oceanColor;',
@@ -382,15 +390,21 @@ THREE.ShaderLib['ocean_main'] = {
 			'vec3 view = normalize(u_cameraPosition - vPos);',
 			'float fresnel = 0.02 + 0.98 * pow(1.0 - dot(normal, view), 5.0);',
 			'vec3 sky = 0.15 * fresnel * u_skyColor;',
+			
+			'vec3 reflectionSample = texture2DProj(u_reflection, vReflectCoordinates.xyz).xyz;',
 
 			'float diffuse = clamp(dot(normal, normalize(u_sunDirection)), 0.0, 1.0);',
 			'vec3 water = (1.0 - fresnel) * u_oceanColor * u_skyColor * diffuse;',
 
 			'vec3 color = sky + water;',
-			'float distanceRatio = log( 1.0 / length( vWorldPosition ) * 10000.0 + 1.0 );',
-			'color = color * min( 1.0, distanceRatio );',
+			'float distanceRatio = min( 1.0, log( 1.0 / length( vWorldPosition ) * 10000.0 + 1.0 ) );',
+			//'color = color * distanceRatio;',
+			'color = hdr(color, u_exposure);',
+			
+			'color = u_oceanColor * ( 1.0 - distanceRatio ) + color * distanceRatio;',
 
-			'gl_FragColor = vec4(hdr(color, u_exposure), 1.0);',
+			'gl_FragColor = vec4( reflectionSample, 1.0);',
+			//'gl_FragColor = vec4( color, 1.0);',
 		'}'
 	].join('\n')
 };
