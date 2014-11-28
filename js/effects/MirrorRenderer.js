@@ -19,7 +19,7 @@ THREE.MirrorRenderer = function (renderer, camera, scene, options) {
 	var width = optionalParameter(options.textureWidth, 512);
 	var height = optionalParameter(options.textureHeight, 512);
 	this.clipBias = optionalParameter(options.clipBias, -0.0001);
-	this.clipBias = optionalParameter(options.clipBias, -0.1);
+	this.clipBias = optionalParameter(options.clipBias, -0.01);
 	
 	this.renderer = renderer;
 	this.scene = scene;
@@ -70,10 +70,10 @@ THREE.MirrorRenderer.prototype.updateTextureMatrix = function () {
 	this.rotationMatrix.extractRotation(this.matrixWorld);
 
 	if( this.mirrorWorldPosition.y > this.cameraWorldPosition.y ) {
-		this.normal.set(0, 0, 1);
+		this.normal.set(0, -1, 0);
 	}
 	else {
-		this.normal.set(0, 0, 1);
+		this.normal.set(0, 1, 0);
 	}
 	this.normal.applyMatrix4(this.rotationMatrix);
 
