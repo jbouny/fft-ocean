@@ -132,44 +132,37 @@
 					this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { type: "v3", value: this.ms_Camera.position };
 					this.ms_Scene.add(this.ms_Ocean.oceanMesh);
 
+					// Initialize UI
 					var gui = new dat.GUI();
-					var c1 = gui.add(this.ms_Ocean, "size", 10, 5000);
-					c1.onChange(function(v) {
+					gui.add(this.ms_Ocean, "size", 10, 5000).onChange(function(v) {
 						this.object.size = v;
 						this.object.changed = true;
 					});
-					var c2 = gui.add(this.ms_Ocean, "choppiness", 0.1, 4);
-					c2.onChange(function (v) {
+					gui.add(this.ms_Ocean, "choppiness", 0.1, 4).onChange(function (v) {
 						this.object.choppiness = v;
 						this.object.changed = true;
 					});
-					var c3 = gui.add(this.ms_Ocean, "windX", -15, 15);
-					c3.onChange(function (v) {
+					gui.add(this.ms_Ocean, "windX", -15, 15).onChange(function (v) {
 						this.object.windX = v;
 						this.object.changed = true;
 					});
-					var c4 = gui.add(this.ms_Ocean, "windY", -15, 15);
-					c4.onChange(function (v) {
+					gui.add(this.ms_Ocean, "windY", -15, 15).onChange(function (v) {
 						this.object.windY = v;
 						this.object.changed = true;
 					});
-					var c5 = gui.add(this.ms_Ocean, "sunDirectionX", -1.0, 1.0);
-					c5.onChange(function (v) {
+					gui.add(this.ms_Ocean, "sunDirectionX", -1.0, 1.0).onChange(function (v) {
 						this.object.sunDirectionX = v;
 						this.object.changed = true;
 					});
-					var c6 = gui.add(this.ms_Ocean, "sunDirectionY", -1.0, 1.0);
-					c6.onChange(function (v) {
+					gui.add(this.ms_Ocean, "sunDirectionY", -1.0, 1.0).onChange(function (v) {
 						this.object.sunDirectionY = v;
 						this.object.changed = true;
 					});
-					var c7 = gui.add(this.ms_Ocean, "sunDirectionZ", -1.0, 1.0);
-					c7.onChange(function (v) {
+					gui.add(this.ms_Ocean, "sunDirectionZ", -1.0, 1.0).onChange(function (v) {
 						this.object.sunDirectionZ = v;
 						this.object.changed = true;
 					});
-					var c8 = gui.add(this.ms_Ocean, "exposure", 0.0, 0.5);
-					c8.onChange(function (v) {
+					gui.add(this.ms_Ocean, "exposure", 0.0, 0.5).onChange(function (v) {
 						this.object.exposure = v;
 						this.object.changed = true;
 					});
