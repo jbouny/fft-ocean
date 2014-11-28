@@ -27,7 +27,6 @@
 	};
 	options = options || {};
 	this.clearColor = optionalParameter(options.CLEAR_COLOR, [1.0, 1.0, 1.0, 0.0]);
-	this.geometryOrigin = optionalParameter(options.GEOMETRY_ORIGIN, [-1000.0, -1000.0]);
 	this.sunDirectionX = optionalParameterArray(options.SUN_DIRECTION, 0, -1.0);
 	this.sunDirectionY = optionalParameterArray(options.SUN_DIRECTION, 1, 1.0);
 	this.sunDirectionZ = optionalParameterArray(options.SUN_DIRECTION, 2, 1.0);

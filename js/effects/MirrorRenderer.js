@@ -18,7 +18,6 @@ THREE.MirrorRenderer = function (renderer, camera, scene, options) {
 	
 	var width = optionalParameter(options.textureWidth, 512);
 	var height = optionalParameter(options.textureHeight, 512);
-	this.clipBias = optionalParameter(options.clipBias, -0.0001);
 	this.clipBias = optionalParameter(options.clipBias, -0.01);
 	
 	this.renderer = renderer;
