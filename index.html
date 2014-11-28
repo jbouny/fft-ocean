@@ -107,6 +107,12 @@
 					
 					this.LoadSkyBox();
 					
+					// Initialize Clouds
+					this.ms_CloudShader = new CloudShader(this.ms_Renderer);
+					this.ms_CloudShader.cloudMesh.scale.multiplyScalar(3);
+					this.ms_Scene.add( this.ms_CloudShader.cloudMesh );
+					
+					// Initialize Ocean
 					var gsize = 512; 
 					var res = 512; 
 					var gres = res;
@@ -215,6 +221,7 @@
 					this.ms_Ocean.deltaTime = (currentTime - lastTime) / 1000 || 0.0;
 					lastTime = currentTime;
 					this.ms_Ocean.render(this.ms_Ocean.deltaTime);
+					this.ms_CloudShader.update();
 					this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
 					if (this.ms_Ocean.changed) {
 						this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
