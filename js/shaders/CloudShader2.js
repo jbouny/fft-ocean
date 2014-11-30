@@ -183,7 +183,7 @@ function CloudShader( renderer, noiseSize, cloudSize ) {
 		j -= 0.5;
 
 		var r2 = i * i * 4 + j * j * 4;
-		var scale = 10000;
+		var scale = 100000;
 
 		return new THREE.Vector3(
 			i * 20 * scale,

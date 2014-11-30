@@ -69,6 +69,8 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'	vec3 ray = getCamRay( cameraRotation, screenUV );',
 			
 		'	// Return the intersection between the camera ray and a given plane',
+		'	if(vCamPosition.y < groundHeight)',
+		'		return vec3( 0.0, 0.0, 0.0 );',
 		'	return interceptPlane( vCamPosition, ray, groundNormal, groundHeight );',
 		'}'
 	

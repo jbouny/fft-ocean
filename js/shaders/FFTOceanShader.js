@@ -404,13 +404,13 @@ THREE.ShaderLib['ocean_main'] = {
 			'vec3 water = (1.0 - fresnel) * u_oceanColor;',
 
 			'vec3 color = sky * distanceRatio + water * reflectionSample;',
-			//'color = color * distanceRatio;',
+			'color = color * distanceRatio + reflectionSample * (1.0 - distanceRatio);',
 			'color = hdr(color, u_exposure);',
 			
 			//'color = u_oceanColor * ( 1.0 - distanceRatio ) + color * distanceRatio;',
 
 			//'gl_FragColor = vec4( reflectionSample, 1.0);',
-			'gl_FragColor = vec4(color, 1.0);',
+			'gl_FragColor = vec4(color, 0.2);',
 		'}'
 	].join('\n')
 };
