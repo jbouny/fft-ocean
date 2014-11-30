@@ -393,8 +393,9 @@ THREE.ShaderLib['ocean_main'] = {
 			'distanceRatio *= distanceRatio;',
 			'distanceRatio = distanceRatio * 0.3 + 0.65;',
 			'float fresnel = ( 1.0 - distanceRatio ) + distanceRatio * pow(1.0 - dot(normal, view), 3.0);',
-			
-			'vec3 reflectionSample = texture2DProj(u_reflection, vReflectCoordinates.xyz + ( normal * 10.0 - vec3( 0.0, 10.0, 0 ) ) ).xyz;',
+		
+			'vec3 distortion = normal * distanceRatio * 50.0 - vec3( 0.0, distanceRatio * 50.0, 0 );',	
+			'vec3 reflectionSample = texture2DProj(u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
 			//'reflectionSample *= reflectionSample;',
 			'reflectionSample *= 10.0;',
 			
