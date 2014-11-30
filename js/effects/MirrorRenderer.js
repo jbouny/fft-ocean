@@ -77,6 +77,7 @@ THREE.MirrorRenderer.prototype.updateTextureMatrix = function () {
 	this.normal.applyMatrix4(this.rotationMatrix);
 
 	var view = this.mirrorWorldPosition.clone().sub(this.cameraWorldPosition);
+	view.y -= 0.1;
 	view.reflect(this.normal).negate();
 	view.add(this.mirrorWorldPosition);
 
