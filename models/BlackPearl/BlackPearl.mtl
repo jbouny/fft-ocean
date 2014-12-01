@@ -1,0 +1,84 @@
+#
+# Wavefront material file
+# Converted by Meshlab Group
+#
+
+newmtl material_0
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 1.000000 1.000000 1.000000
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\flag.png
+
+newmtl material_1
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 0.41 0.37 0.34
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\dark_teak.jpg
+
+newmtl material_2
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 0.41 0.37 0.34
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\dark_teak.jpg
+
+newmtl material_3
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 1.000000 1.000000 1.000000
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\dark_wood_planks.png
+
+newmtl material_4
+Ka 0.200000 0.200000 0.200000
+Kd 0.5 0.5 0.5
+Ks 0.2 0.2 0.2
+Tr 0.000000
+illum 2
+Ns 0.000000
+
+newmtl material_5
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 0.41 0.37 0.34
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\Wood_floor_ffs062.jpg
+
+newmtl material_6
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 1.000000 1.000000 1.000000
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\Map__5_Tiles.jpg
+
+newmtl material_7
+Ka 0.200000 0.200000 0.200000
+Kd 0.3 0.25 0.22
+Ks 0.3 0.25 0.22
+Tr 0.000000
+illum 2
+Ns 0.000000
+
+newmtl material_8
+Ka 0.200000 0.200000 0.200000
+Kd 0.75 0.75 0.75
+Ks 0.8 0.76 0.74
+Tr 0.000000
+illum 2
+Ns 0.000000
+map_Kd .\sails1.png
+
