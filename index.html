@@ -19,6 +19,8 @@
 		<script src="js/shaders/FFTOceanShader.js"></script>
 		<script src="js/effects/MirrorRenderer.js"></script>
 		<script src="js/shaders/CloudShader2.js"></script>
+		<script src="js/loaders/OBJMTLLoader.js"></script>
+		<script src="js/loaders/MTLLoader.js"></script>
 		<script src="js/Ocean.js"></script>		
 
 		<script>
@@ -95,6 +97,26 @@
 					this.ms_Camera = new THREE.PerspectiveCamera(55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 300000);
 					this.ms_Camera.position.set(450, 350, 450);
 					this.ms_Camera.lookAt(new THREE.Vector3());
+					
+					// Add light
+					var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
+					directionalLight.position.set( 0, 1, 1 );
+					this.ms_Scene.add( directionalLight );
+					
+					// Add Black Pearl
+					var loader = new THREE.OBJMTLLoader();
+					this.ms_BlackPearl = null;
+					loader.load('models/BlackPearl/BlackPearl.obj', 'models/BlackPearl/BlackPearl.mtl', function (object) {
+						object.position.y = 20.0;
+						if(object.children) {
+							for(child in object.children) {
+								object.children[child].material.side = THREE.DoubleSide;
+							}
+						}
+						
+						DEMO.ms_Scene.add(object);
+						DEMO.ms_BlackPearl = object;
+					} );
 
 					// Initialize Orbit control		
 					this.ms_Controls = new THREE.OrbitControls(this.ms_Camera, this.ms_Renderer.domElement);
@@ -171,15 +193,6 @@
 						this.object.exposure = v;
 						this.object.changed = true;
 					});
-					
-					// Add shape
-					object = new THREE.Mesh( new THREE.IcosahedronGeometry( 30, 1 ), new THREE.MeshBasicMaterial( { color: 0xffaa00, transparent: true, blending: THREE.AdditiveBlending } ) );
-					object.position.set( 0, 0, 0 );
-					this.ms_Scene.add( object );
-					
-					object = new THREE.Mesh( new THREE.SphereGeometry( 30, 20, 10 ), new THREE.MeshBasicMaterial( { color: 0xffaa00 } ) );
-					object.position.set( 100, 0, 0 );
-					this.ms_Scene.add( object );
 				},
 	
 				LoadSkyBox: function LoadSkyBox() {
