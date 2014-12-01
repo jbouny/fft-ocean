@@ -249,6 +249,14 @@
 					var currentTime = new Date().getTime();
 					this.ms_Ocean.deltaTime = (currentTime - lastTime) / 1000 || 0.0;
 					lastTime = currentTime;
+					
+					if(this.ms_BlackPearl !== null)
+					{
+						this.ms_BlackPearl.rotation.y = Math.cos(currentTime * 0.0008) * 0.05 - 0.025 ;
+						this.ms_BlackPearl.rotation.x = Math.sin(currentTime * 0.001154 + 0.78) * 0.1 + 0.05 ;
+					}
+					
+					
 					this.ms_Ocean.render(this.ms_Ocean.deltaTime);
 					this.ms_CloudShader.update();
 					this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
