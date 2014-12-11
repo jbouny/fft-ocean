@@ -120,20 +120,24 @@
 					
 					// Add rain
 					{
-						var rainMaterial = new THREE.PointCloudMaterial( { size: 0.3, color: 0x888888 } );
+						var rainMaterial = new THREE.PointCloudMaterial( { size: 0.2, color: 0xaaaaaa } );
 						this.ms_RainGeometry = new THREE.Geometry();
 						var size = 100;
-						for ( i = 0; i < 1000; i++ )
+						for ( i = 0; i < 2000; i++ )
 						{
 							var vertex = new THREE.Vector3();
-							vertex.x = Math.random() * size * 1.5 - size * 0.75;
+							/*vertex.x = Math.random() * size * 1.5 - size * 0.75;
 							vertex.y = Math.random() * size - size * 0.5;
-							vertex.z = Math.random() * - size - 50 ;
+							vertex.z = Math.random() * - size - 50 ;*/
+							vertex.x = Math.random() * 2.0 * size - size;
+							vertex.y = Math.random() * 2.0 * size - size;
+							vertex.z = Math.random() * size - size * 0.5;
 							this.ms_RainGeometry.vertices.push( vertex );
 						}
 						this.ms_Rain = new THREE.PointCloud( this.ms_RainGeometry, rainMaterial );
 						this.ms_Camera.add( this.ms_Rain );
 						this.ms_Scene.add( this.ms_Camera );
+						this.ms_Rain.position.setZ( - size * 0.75 ) ;
 					}
 
 
@@ -290,6 +294,7 @@
 						if( this.ms_RainGeometry.vertices[i].y < -50 )
 							this.ms_RainGeometry.vertices[i].y = 50;
 					}
+					this.ms_Rain.rotation.set( -this.ms_Camera.rotation.x, -this.ms_Camera.rotation.y, -this.ms_Camera.rotation.z, "ZYX" ) ;
 					this.ms_RainGeometry.verticesNeedUpdate = true ;
 					
 					
