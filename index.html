@@ -117,6 +117,25 @@
 						DEMO.ms_Scene.add(object);
 						DEMO.ms_BlackPearl = object;
 					} );
+					
+					// Add rain
+					{
+						var rainMaterial = new THREE.PointCloudMaterial( { size: 0.3, color: 0x888888 } );
+						this.ms_RainGeometry = new THREE.Geometry();
+						var size = 100;
+						for ( i = 0; i < 1000; i++ )
+						{
+							var vertex = new THREE.Vector3();
+							vertex.x = Math.random() * size * 1.5 - size * 0.75;
+							vertex.y = Math.random() * size - size * 0.5;
+							vertex.z = Math.random() * - size - 50 ;
+							this.ms_RainGeometry.vertices.push( vertex );
+						}
+						this.ms_Rain = new THREE.PointCloud( this.ms_RainGeometry, rainMaterial );
+						this.ms_Camera.add( this.ms_Rain );
+						this.ms_Scene.add( this.ms_Camera );
+					}
+
 
 					// Initialize Orbit control		
 					this.ms_Controls = new THREE.OrbitControls(this.ms_Camera, this.ms_Renderer.domElement);
@@ -250,11 +269,28 @@
 					this.ms_Ocean.deltaTime = (currentTime - lastTime) / 1000 || 0.0;
 					lastTime = currentTime;
 					
+					// Update black ship
 					if(this.ms_BlackPearl !== null)
 					{
 						this.ms_BlackPearl.rotation.y = Math.cos(currentTime * 0.0008) * 0.05 - 0.025 ;
 						this.ms_BlackPearl.rotation.x = Math.sin(currentTime * 0.001154 + 0.78) * 0.1 + 0.05 ;
 					}
+					
+					// Update rain
+					var seed = 1;
+					var fastRandom = function fastRandom() // https://stackoverflow.com/questions/521295/javascript-random-seeds
+					{
+						var x = Math.sin(seed++) * 10000;
+						return x - Math.floor(x);
+					}
+					for( i in this.ms_RainGeometry.vertices )
+					{
+						var speed = 1.0;
+						this.ms_RainGeometry.vertices[i].y -= fastRandom() * speed + speed;
+						if( this.ms_RainGeometry.vertices[i].y < -50 )
+							this.ms_RainGeometry.vertices[i].y = 50;
+					}
+					this.ms_RainGeometry.verticesNeedUpdate = true ;
 					
 					
 					this.ms_Ocean.render(this.ms_Ocean.deltaTime);
