@@ -97,6 +97,7 @@
 					this.ms_Camera = new THREE.PerspectiveCamera(55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 300000);
 					this.ms_Camera.position.set(450, 350, 450);
 					this.ms_Camera.lookAt(new THREE.Vector3());
+					this.ms_Scene.add( this.ms_Camera );
 					
 					// Add light
 					var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
@@ -126,9 +127,6 @@
 						for ( i = 0; i < 2000; i++ )
 						{
 							var vertex = new THREE.Vector3();
-							/*vertex.x = Math.random() * size * 1.5 - size * 0.75;
-							vertex.y = Math.random() * size - size * 0.5;
-							vertex.z = Math.random() * - size - 50 ;*/
 							vertex.x = Math.random() * 2.0 * size - size;
 							vertex.y = Math.random() * 2.0 * size - size;
 							vertex.z = Math.random() * size - size * 0.5;
@@ -136,10 +134,8 @@
 						}
 						this.ms_Rain = new THREE.PointCloud( this.ms_RainGeometry, rainMaterial );
 						this.ms_Camera.add( this.ms_Rain );
-						this.ms_Scene.add( this.ms_Camera );
 						this.ms_Rain.position.setZ( - size * 0.75 ) ;
 					}
-
 
 					// Initialize Orbit control		
 					this.ms_Controls = new THREE.OrbitControls(this.ms_Camera, this.ms_Renderer.domElement);
@@ -180,7 +176,7 @@
 					this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix = { type: "m4", value: this.ms_Camera.projectionMatrix };
 					this.ms_Ocean.materialOcean.uniforms.u_viewMatrix = { type: "m4", value: this.ms_Camera.matrixWorldInverse };
 					this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { type: "v3", value: this.ms_Camera.position };
-					this.ms_Scene.add(this.ms_Ocean.oceanMesh);
+					this.ms_Scene.add( this.ms_Ocean.oceanMesh );
 
 					// Initialize UI
 					var gui = new dat.GUI();
@@ -235,12 +231,14 @@
 					  'img/pz.jpg',
 					  'img/nz.jpg',
 					  //*/
-					  /*'img/skybox_0.jpg',
+					  /*
+					  'img/skybox_0.jpg',
 					  'img/skybox_1.jpg',
 					  'img/skybox_2.jpg',
 					  'img/skybox_3.jpg',
 					  'img/skybox_4.jpg',
-					  'img/skybox_5.jpg',*/
+					  'img/skybox_5.jpg',
+					  //*/
 					  
 					]);
 					aCubeMap.format = THREE.RGBFormat;
@@ -297,8 +295,11 @@
 					this.ms_Rain.rotation.set( -this.ms_Camera.rotation.x, -this.ms_Camera.rotation.y, -this.ms_Camera.rotation.z, "ZYX" ) ;
 					this.ms_RainGeometry.verticesNeedUpdate = true ;
 					
+					// Render ocean reflection
+					this.ms_Camera.remove( this.ms_Rain ) ;
+					this.ms_Ocean.render( this.ms_Ocean.deltaTime );
+					this.ms_Camera.add( this.ms_Rain ) ;
 					
-					this.ms_Ocean.render(this.ms_Ocean.deltaTime);
 					this.ms_CloudShader.update();
 					this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
 					if (this.ms_Ocean.changed) {
@@ -313,7 +314,6 @@
 					this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.ms_Camera.matrixWorldInverse ;
 					this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.ms_Camera.position;
 					this.ms_Ocean.materialOcean.depthTest = true;
-					//this.ms_Scene.__lights[1].position.x = this.ms_Scene.__lights[1].position.x + 0.01;
 					this.ms_Controls.update();
 					this.Display();
 				},
