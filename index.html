@@ -22,7 +22,33 @@
 		<script src="js/loaders/OBJMTLLoader.js"></script>
 		<script src="js/loaders/MTLLoader.js"></script>
 		<script src="js/effects/Ocean.js"></script>		
-		<script src="js/demo.js"></script>		
+		<script src="js/demo.js"></script>
+		
+		<script id="vertexShader" type="x-shader/x-vertex">
+			attribute vec3 color;
+
+			varying vec3 vColor;
+
+			void main() {
+				vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+
+				vColor = color;
+
+				gl_PointSize = 50.0 * abs( modelViewMatrix[1].y );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+		</script>
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			uniform sampler2D texture;
+
+			varying vec3 vColor;
+
+			void main() {
+				vec4 startColor = vec4(vColor, 1.0);
+				vec4 finalColor;
+				gl_FragColor = texture2D( texture, gl_PointCoord );
+			}
+		</script>
 
 		<script>
 			var lastTime = ( new Date() ).getTime();

@@ -60,10 +60,18 @@ var DEMO =
 		
 		// Add rain
 		{
-			var rainMaterial = new THREE.PointCloudMaterial( { size: 0.2, color: 0xaaaaaa } );
-			this.ms_RainGeometry = new THREE.Geometry();
 			var size = 100;
-			for ( i = 0; i < 2000; i++ )
+			var rainTexture = THREE.ImageUtils.loadTexture( "img/water-drop.png" );
+
+			var rainMaterial = new THREE.ShaderMaterial({
+				uniforms: { texture: { type: 't', value: rainTexture } }, 
+				vertexShader: document.getElementById('vertexShader').textContent,
+				fragmentShader: document.getElementById('fragmentShader').textContent,
+				transparent: true
+			});
+			
+			this.ms_RainGeometry = new THREE.Geometry();
+			for ( i = 0; i < 1000; i++ )
 			{
 				var vertex = new THREE.Vector3();
 				vertex.x = Math.random() * 2.0 * size - size;
@@ -224,7 +232,7 @@ var DEMO =
 		}
 		for( i in this.ms_RainGeometry.vertices )
 		{
-			var speed = 2.0;
+			var speed = 4.0;
 			this.ms_RainGeometry.vertices[i].y -= fastRandom() * speed + speed;
 			if( this.ms_RainGeometry.vertices[i].y < -50 )
 				this.ms_RainGeometry.vertices[i].y = 50;
