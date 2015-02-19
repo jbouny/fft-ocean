@@ -1,6 +1,6 @@
 THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
-		'const float infinite = 10000000000.0;',
+		'const float infinite = 50000.0;',
 		'const float screenScale = 1.2;',
 		'const vec3 groundNormal = vec3( 0.0, 1.0, 0.0 );',
 		'const float groundHeight = 0.0;',
@@ -71,7 +71,11 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'	// Return the intersection between the camera ray and a given plane',
 		'	if(vCamPosition.y < groundHeight)',
 		'		return vec3( 0.0, 0.0, 0.0 );',
-		'	return interceptPlane( vCamPosition, ray, groundNormal, groundHeight );',
+		'	vec3 position = interceptPlane( vCamPosition, ray, groundNormal, groundHeight );',
+		'	position.x = position.x > 0.0 ? min( position.x, infinite ) : max( position.x, -infinite );',
+		'	position.y = position.y > 0.0 ? min( position.y, infinite ) : max( position.y, -infinite );',
+		'	position.z = position.z > 0.0 ? min( position.z, infinite ) : max( position.z, -infinite );',
+		'	return position;',
 		'}'
 	
 ].join('\n');
