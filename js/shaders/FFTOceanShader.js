@@ -353,7 +353,7 @@ THREE.ShaderLib['ocean_main'] = {
 		'void main (void) {',
 			THREE.ShaderChunk["screenplane_vertex"],
 			
-			'float distanceRatio = min( 1.0, log( 1.0 / length( vWorldPosition ) * 500.0 + 1.0 ) );',
+			'float distanceRatio = min( 1.0, log( 1.0 / length( u_viewMatrix * vWorldPosition ) * 500.0 + 1.0 ) );',
 			'vec3 displacement = texture2D(u_displacementMap, vWorldPosition.xz * 0.003).rgb * (u_geometrySize / u_size) * distanceRatio;',
 			
 			'vec3 newPos = vWorldPosition.xyz + displacement;',
@@ -394,24 +394,20 @@ THREE.ShaderLib['ocean_main'] = {
 			'distanceRatio = distanceRatio * 0.3 + 0.65;',
 			'float fresnel = ( 1.0 - distanceRatio ) + distanceRatio * pow(1.0 - dot(normal, view), 3.0);',
 		
-			'vec3 distortion = ( normal * distanceRatio * 50.0 - vec3( 0.0, distanceRatio * 50.0, 0 ) ) * vec3(1.0, 0.0, 0.0);',	
+			'vec3 distortion = ( normal * distanceRatio * 50.0 - vec3( 0.0, distanceRatio * 50.0, 0 ) ) * vec3( 1.0, 0.0, 0.0 );',	
 			'vec3 reflectionSample = texture2DProj(u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
-			//'reflectionSample *= reflectionSample;',
-			'reflectionSample *= 10.0;',
 			
-			'vec3 sky = fresnel * reflectionSample;',
+			'vec3 sky = fresnel * reflectionSample * 10.0;',
 
-			//'float diffuse = clamp(dot(normal, normalize(u_sunDirection)), 0.0, 1.0);',
 			'vec3 water = (1.0 - fresnel) * u_oceanColor;',
 
-			'vec3 color = sky * distanceRatio + water * reflectionSample;',
-			'color = color * distanceRatio + reflectionSample * (1.0 - distanceRatio);',
+			'vec3 color = sky * distanceRatio + water * reflectionSample * 10.0;',
+			'color = color * distanceRatio + reflectionSample * 10.0 * (1.0 - distanceRatio);',
 			'color = hdr(color, u_exposure);',
 			
 			//'color = u_oceanColor * ( 1.0 - distanceRatio ) + color * distanceRatio;',
 
-			//'gl_FragColor = vec4( reflectionSample, 1.0);',
-			'gl_FragColor = vec4(color, 0.2);',
+			'gl_FragColor = vec4(color, 1.0);',
 		'}'
 	].join('\n')
 };
