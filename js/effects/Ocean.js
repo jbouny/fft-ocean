@@ -43,7 +43,6 @@
 	this.size = optionalParameter(options.INITIAL_SIZE, 250.0),
 	this.choppiness = optionalParameter(options.INITIAL_CHOPPINESS, 1.5);
 	
-	// 
 	this.matrixNeedsUpdate = false;
 	
 	// Setup framebuffer pipeline
@@ -199,6 +198,7 @@
 
 	// Generate the ocean mesh
 	this.generateMesh();
+	this.mirror.mesh = this.oceanMesh;
 };
 
 THREE.Ocean.prototype.generateMesh = function () {
