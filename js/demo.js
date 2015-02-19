@@ -39,9 +39,9 @@ var DEMO =
 	InitializeScene : function InitializeScene() {
 		
 		// Add light
-		var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
-		directionalLight.position.set( 0, 1, 1 );
-		this.ms_Scene.add( directionalLight );
+		var mainDirectionalLight = new THREE.DirectionalLight( 0xffffff, 1.3 );
+		mainDirectionalLight.position.set( -0.2, 1, 1 );
+		this.ms_Scene.add( mainDirectionalLight );
 		
 		// Add Black Pearl
 		var loader = new THREE.OBJMTLLoader();
