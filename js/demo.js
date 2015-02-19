@@ -26,7 +26,7 @@ var DEMO =
 		this.ms_Controls.userPan = false;
 		this.ms_Controls.userPanSpeed = 0.0;
 		this.ms_Controls.minDistance = 0;
-		this.ms_Controls.maxDistance = 2000.0;
+		this.ms_Controls.maxDistance = 20000.0;
 		this.ms_Controls.minPolarAngle = 0;
 		this.ms_Controls.maxPolarAngle = Math.PI * 0.495;
 		
@@ -60,7 +60,7 @@ var DEMO =
 		
 		// Add rain
 		{
-			var size = 100;
+			var size = 128;
 			var rainTexture = THREE.ImageUtils.loadTexture( "img/water-drop.png" );
 
 			var rainMaterial = new THREE.ShaderMaterial({
@@ -71,7 +71,7 @@ var DEMO =
 			});
 			
 			this.ms_RainGeometry = new THREE.Geometry();
-			for ( i = 0; i < 1000; i++ )
+			for ( i = 0; i < 100; i++ )
 			{
 				var vertex = new THREE.Vector3();
 				vertex.x = Math.random() * 2.0 * size - size;
@@ -94,7 +94,7 @@ var DEMO =
 		// Initialize Ocean
 		var gsize = 512; 
 		var res = 512; 
-		var gres = res;
+		var gres = 256;
 		var origx = -gsize / 2;
 		var origz = -gsize / 2;
 		this.ms_Ocean = new THREE.Ocean( this.ms_Renderer, this.ms_Camera, this.ms_Scene,
@@ -121,7 +121,7 @@ var DEMO =
 	InitGui : function InitGui() {
 		// Initialize UI
 		var gui = new dat.GUI();
-		gui.add( this.ms_Ocean, "size", 10, 5000 ).onChange( function( v ) {
+		gui.add( this.ms_Ocean, "size", 10, 2000 ).onChange( function( v ) {
 			this.object.size = v;
 			this.object.changed = true;
 		} );
@@ -196,7 +196,7 @@ var DEMO =
 		} );
 
 		var aSkybox = new THREE.Mesh(
-		  new THREE.BoxGeometry( 100000, 100000, 100000 ),
+		  new THREE.BoxGeometry( 200000, 200000, 200000 ),
 		  aSkyBoxMaterial
 		);
 		
