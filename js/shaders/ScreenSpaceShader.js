@@ -1,6 +1,6 @@
 THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
-		'const float infinite = 50000.0;',
+		'const float infinite = 100000.0;',
 		'const float screenScale = 1.2;',
 		'const vec3 groundNormal = vec3( 0.0, 1.0, 0.0 );',
 		'const float groundHeight = 0.0;',
@@ -10,8 +10,7 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
 		'vec3 interceptPlane( in vec3 source, in vec3 dir, in vec3 normal, float height )',
 		'{',
-		'	// Compute the distance between the source and the surface, following a ray, then return the intersection',
-		'	//float distance = - source.y / dir.y;',
+			// Compute the distance between the source and the surface, following a ray, then return the intersection
 		'	float distance = ( height - dot( normal, source ) ) / dot( dir, normal );',
 		'	if( distance < 0.0 )',
 		'		return source + dir * distance;',
@@ -21,7 +20,7 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
 		'mat3 getRotation()',
 		'{',
-		'	// Extract the 3x3 rotation matrix from the 4x4 model view matrix',
+			// Extract the 3x3 rotation matrix from the 4x4 model view matrix
 		'	return mat3( ',
 		'		modelViewMatrix[0].xyz,',
 		'		modelViewMatrix[1].xyz,',
@@ -31,51 +30,55 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
 		'vec3 getCameraPos( in mat3 rotation )',
 		'{',
-		'	// Xc = R * Xw + t',
-		'	// c = - R.t() * t <=> c = - t.t() * R',
+			// Xc = R * Xw + t
+			// c = - R.t() * t <=> c = - t.t() * R
 		'	return - modelViewMatrix[3].xyz * rotation;',
 		'}',
 
 		'vec2 getImagePlan(vec2 coord)',
-		'{				',
-		'	// Extracting aspect from projection matrix:',
-		'	// P = | e   0       0   0 |',
-		'	//     | 0   e/(h/w) 0   0 |',
-		'	//     | 0   0       .   . |',
-		'	//     | 0   0       -1  0 |',
-		'	float focal = projectionMatrix[0][0];',
-		'	float aspect = projectionMatrix[1][1] / focal;',
+		'{',
+			// Extracting aspect from projection matrix:
+			// P = | e   0       0   0 |
+			//     | 0   e/(h/w) 0   0 |
+			//     | 0   0       .   . |
+			//     | 0   0       -1  0 |
+		'	float focal = projectionMatrix[0].x;',
+		'	float aspect = projectionMatrix[1].y / focal;',
 			
-		'	// Fix coordinate aspect and scale',
+			// Fix coordinate aspect and scale
 		'	return vec2( coord.x * aspect * screenScale, coord.y / aspect * screenScale );',
 		'}',
 		
 		'vec3 getCamRay( in mat3 rotation, in vec2 screenUV )',
 		'{',
-		'	// Compute camera ray then rotate it in order to get it in world coordinate',
-		'	return vec3( screenUV.x, screenUV.y, projectionMatrix[0][0] ) * rotation;',
+			// Compute camera ray then rotate it in order to get it in world coordinate
+		'	return vec3( screenUV.x, screenUV.y, projectionMatrix[0].x ) * rotation;',
 		'}',
 		
 		'vec3 computeProjectedPosition()',
 		'{',
-		'	// Extract camera position and rotation from the model view matrix',
+			// Extract camera position and rotation from the model view matrix
 		'	mat3 cameraRotation = getRotation();',
-		'	vCamPosition = getCameraPos( cameraRotation );',
+		'	vec3 camPosition = getCameraPos( cameraRotation );',
+		'	vCamPosition = camPosition;',
 		
-		'	// Extract coordinate of the vertex on the image plan',
-		'	vec2 screenUV = getImagePlan( ( projectionMatrix * vec4( position, 1.0 ) ).xy ) ;',
+			// Return the intersection between the camera ray and a given plane
+		'	if(camPosition.y < groundHeight)',
+		'		return vec3( 0.0, 0.0, 0.0 );',
+		
+			// Extract coordinate of the vertex on the image plan
+		'	vec2 screenUV = getImagePlan( ( projectionMatrix * vec4( position.xyz, 1.0 ) ).xy ) ;',
 			
-		'	// Compute the ray from camera to world',
+			// Compute the ray from camera to world
 		'	vec3 ray = getCamRay( cameraRotation, screenUV );',
 			
-		'	// Return the intersection between the camera ray and a given plane',
-		'	if(vCamPosition.y < groundHeight)',
-		'		return vec3( 0.0, 0.0, 0.0 );',
-		'	vec3 position = interceptPlane( vCamPosition, ray, groundNormal, groundHeight );',
-		'	position.x = position.x > 0.0 ? min( position.x, infinite ) : max( position.x, -infinite );',
-		'	position.y = position.y > 0.0 ? min( position.y, infinite ) : max( position.y, -infinite );',
-		'	position.z = position.z > 0.0 ? min( position.z, infinite ) : max( position.z, -infinite );',
-		'	return position;',
+		'	vec3 finalPos = interceptPlane( camPosition, ray, groundNormal, groundHeight );',
+		
+		'	float distance = length( finalPos );',
+		'	if( distance > infinite )',
+		'		finalPos *= infinite / distance;',
+		
+		'	return finalPos;',
 		'}'
 	
 ].join('\n');
