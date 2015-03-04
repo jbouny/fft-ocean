@@ -314,66 +314,81 @@ THREE.ShaderLib['ocean_normals'] = {
 		'}'
 	].join('\n')
 };
+
+THREE.UniformsLib[ "oceanfft" ] = {
+
+	"u_displacementMap": { type: "t", value: null },
+	"u_reflection": { type: "t", value: null },
+	"u_normalMap": { type: "t", value: null },
+	"u_geometrySize": { type: "f", value: null },
+	"u_size": { type: "f", value: null },
+	"u_mirrorMatrix": { type: "m4", value: null },
+	"u_cameraPosition": { type: "v3", value: null },
+	"u_skyColor": { type: "v3", value: null },
+	"u_oceanColor": { type: "v3", value: null },
+	"u_sunDirection": { type: "v3", value: null },
+	"u_exposure": { type: "f", value: null },
+
+},
+
+THREE.ShaderChunk[ "oceanfft_pars_vertex" ] = [
+
+	'uniform sampler2D u_displacementMap;',
+		
+].join('\n');
+
+THREE.ShaderChunk[ "oceanfft_vertex" ] = [
+
+	'vec3 displacement = texture2D( u_displacementMap, worldPosition.xz * 0.003 ).rgb * ( u_geometrySize / u_size );',
+	'vec4 oceanfftWorldPosition = worldPosition + vec4( displacement, 0.0 );',
+	
+].join('\n');
+
+THREE.ShaderChunk[ "oceanfft_pars_fragment" ] = [
+	
+].join('\n');
+
+THREE.ShaderChunk[ "oceanfft_fragment" ] = [
+	
+].join('\n');
+
 THREE.ShaderLib['ocean_main'] = {
-	uniforms: {
-		"u_displacementMap": { type: "t", value: null },
-		"u_reflection": { type: "t", value: null },
-		"u_normalMap": { type: "t", value: null },
-		"u_geometrySize": { type: "f", value: null },
-		"u_size": { type: "f", value: null },
-		"u_projectionMatrix": { type: "m4", value: null },
-		"u_mirrorMatrix": { type: "m4", value: null },
-		"u_viewMatrix": { type: "m4", value: null },
-		"u_cameraPosition": { type: "v3", value: null },
-		"u_skyColor": { type: "v3", value: null },
-		"u_oceanColor": { type: "v3", value: null },
-		"u_sunDirection": { type: "v3", value: null },
-		"u_exposure": { type: "f", value: null },
-	},
-	varying: {
-		"vPos": { type: "v3" },
-		"vUV": { type: "v2" }
-	},
+	uniforms: THREE.UniformsLib[ "oceanfft" ],
 	vertexShader: [
 		'precision highp float;',
 		
-		'varying vec3 vPos;',
-		'varying vec2 vUV;',
+		'varying vec3 vWorldPosition;',
 		'varying vec4 vReflectCoordinates;',
 
-		'uniform mat4 u_projectionMatrix;',
-		'uniform mat4 u_viewMatrix;',
 		'uniform float u_size;',
 		'uniform float u_geometrySize;',
-		'uniform sampler2D u_displacementMap;',
 		'uniform mat4 u_mirrorMatrix;',
 		
-		THREE.ShaderChunk["screenplane_pars_vertex"],
+		THREE.ShaderChunk[ "screenplane_pars_vertex" ],
+		THREE.ShaderChunk[ "oceanfft_pars_vertex" ],
 
 		'void main (void) {',
-			THREE.ShaderChunk["screenplane_vertex"],
+			THREE.ShaderChunk[ "screenplane_vertex" ],
 			
-			'float distanceRatio = min( 1.0, log( 1.0 / length( u_viewMatrix * vWorldPosition ) * 500.0 + 1.0 ) );',
-			'vec3 displacement = texture2D( u_displacementMap, vWorldPosition.xz * 0.003 ).rgb * ( u_geometrySize / u_size ) * distanceRatio;',
+			'vec4 worldPosition = screenPlaneWorldPosition;',
 			
-			'vec3 newPos = vWorldPosition.xyz + displacement;',
-			'vPos = newPos;',
-			'vUV = uv;',
-			'vReflectCoordinates = u_mirrorMatrix * vec4( newPos, 1.0 );',
-			'gl_Position = u_projectionMatrix * u_viewMatrix * vec4( newPos + vec3( 0.0, 0.0, 0.0 ), 1.0 );',
+			THREE.ShaderChunk[ "oceanfft_vertex" ],
+			
+			'vWorldPosition = oceanfftWorldPosition.xyz;',
+			'vReflectCoordinates = u_mirrorMatrix * oceanfftWorldPosition;',
+			
+			'gl_Position = projectionMatrix * modelViewMatrix * oceanfftWorldPosition;',
 		'}'
 	].join('\n'),
 	fragmentShader: [
 		'precision highp float;',
 
-		'varying vec3 vPos;',
-		'varying vec2 vUV;',
+		'varying vec3 vWorldPosition;',
 		'varying vec4 vReflectCoordinates;',
 
 		'uniform sampler2D u_displacementMap;',
 		'uniform sampler2D u_reflection;',
 		'uniform sampler2D u_normalMap;',
-		'uniform vec3 u_cameraPosition;',
 		'uniform vec3 u_oceanColor;',
 		'uniform vec3 u_skyColor;',
 		'uniform vec3 u_sunDirection;',
@@ -386,15 +401,15 @@ THREE.ShaderLib['ocean_main'] = {
 		THREE.ShaderChunk["screenplane_pars_fragment"],
 
 		'void main (void) {',
-			'vec3 normal = texture2D( u_normalMap, vPos.xz * 0.003 ).rgb;',
-			'vec3 view = normalize( u_cameraPosition - vPos );',
+			'vec3 normal = texture2D( u_normalMap, vWorldPosition.xz * 0.003 ).rgb;',
+			'vec3 view = normalize( vCamPosition - vWorldPosition );',
 			
 			// Compute the specular factor
 			'vec3 reflection = normalize( reflect( -u_sunDirection, normal ) );',
 			'float specularFactor = pow( max( 0.0, dot( view, reflection ) ), 200.0 ) * 20.0;',
 			
 			// Compute a ratio determined by the distance from the camera
-			'float distanceRatio = min( 1.0, log( 1.0 / length( u_cameraPosition - vPos ) * 3000.0 + 1.0 ) );',
+			'float distanceRatio = min( 1.0, log( 1.0 / length( vCamPosition - vWorldPosition ) * 3000.0 + 1.0 ) );',
 			'distanceRatio *= distanceRatio;',
 			'distanceRatio = distanceRatio * 0.9 + 0.1;',
 			
