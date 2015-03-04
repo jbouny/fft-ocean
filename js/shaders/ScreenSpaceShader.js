@@ -6,7 +6,6 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'const float groundHeight = 0.0;',
 		
 		'varying vec3 vCamPosition;',
-		'varying vec4 vWorldPosition;',
 		
 		'vec3 interceptPlane( in vec3 source, in vec3 dir, in vec3 normal, float height )',
 		'{',
@@ -84,10 +83,9 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 ].join('\n');
 
 THREE.ShaderChunk["screenplane_vertex"] = [
-	'vWorldPosition = vec4( computeProjectedPosition(), 1.0 );',
+	'vec4 screenPlaneWorldPosition = vec4( computeProjectedPosition(), 1.0 );',
 ].join('\n');
 
 THREE.ShaderChunk["screenplane_pars_fragment"] = [
-		'varying vec3 vCamPosition;',
-		'varying vec4 vWorldPosition;'
+		'varying vec3 vCamPosition;'
 ].join('\n');
