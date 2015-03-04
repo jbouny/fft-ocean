@@ -42,12 +42,13 @@ var DEMO =
 		// Initialize Orbit control		
 		this.ms_Controls = new THREE.OrbitControls( this.ms_Camera, this.ms_Renderer.domElement );
 		this.ms_Controls.userPan = false;
+		this.ms_Controls.target.set( 0, 100.0, 0 );
 		this.ms_Controls.noKeys = true;
 		this.ms_Controls.userPanSpeed = 0;
 		this.ms_Controls.minDistance = 0;
 		this.ms_Controls.maxDistance = 20000.0;
 		this.ms_Controls.minPolarAngle = 0;
-		this.ms_Controls.maxPolarAngle = Math.PI * 0.495;
+		this.ms_Controls.maxPolarAngle = Math.PI * 0.55;
 		
 		this.InitializeScene();
 		
@@ -242,6 +243,10 @@ var DEMO =
 	},
 
 	Update : function () {
+		// Update camera position
+		if( this.ms_Camera.position.y < 0.0 ) {
+			this.ms_Camera.position.y = 2.0;
+		}
 	
 		// Update black ship displacements
 		this.UpdateCommands();
