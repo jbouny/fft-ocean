@@ -26,7 +26,7 @@ THREE.ShaderLib['ocean_main'] = {
 			'vWorldPosition = oceanfftWorldPosition.xyz;',
 			'vReflectCoordinates = u_mirrorMatrix * oceanfftWorldPosition;',
 			
-			'gl_Position = projectionMatrix * modelViewMatrix * oceanfftWorldPosition;',
+			'gl_Position = projectionMatrix * viewMatrix * oceanfftWorldPosition;',
 		'}'
 	].join('\n'),
 	fragmentShader: [
@@ -53,7 +53,7 @@ THREE.ShaderLib['ocean_main'] = {
 			
 			// Compute the specular factor
 			'vec3 reflection = normalize( reflect( -u_sunDirection, normal ) );',
-			'float specularFactor = pow( max( 0.0, dot( view, reflection ) ), 200.0 ) * 20.0;',
+			'float specularFactor = pow( max( 0.0, dot( view, reflection ) ), 500.0 ) * 20.0;',
 		
 			// Get reflection color
 			'vec3 distortion = 200.0 * normal * vec3( 1.0, 0.0, 0.1 );',	

@@ -164,7 +164,7 @@
 		vertexShader: oceanShader.vertexShader,
 		fragmentShader: oceanShader.fragmentShader,
 		side: THREE.FrontSide,
-		//wireframe: true
+		wireframe: false
 	});
 	//this.materialOcean.wireframe = true;
 	this.materialOcean.uniforms.u_geometrySize = { type: "f", value: this.resolution };
@@ -196,6 +196,7 @@
 	// Generate the ocean mesh
 	this.generateMesh();
 	this.mirror.mesh = this.oceanMesh;
+	camera.add( this.oceanMesh );
 };
 
 THREE.Ocean.prototype.generateMesh = function () {

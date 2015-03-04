@@ -19,11 +19,11 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
 		'mat3 getRotation()',
 		'{',
-			// Extract the 3x3 rotation matrix from the 4x4 model view matrix
+			// Extract the 3x3 rotation matrix from the 4x4 view matrix
 		'	return mat3( ',
-		'		modelViewMatrix[0].xyz,',
-		'		modelViewMatrix[1].xyz,',
-		'		modelViewMatrix[2].xyz',
+		'		viewMatrix[0].xyz,',
+		'		viewMatrix[1].xyz,',
+		'		viewMatrix[2].xyz',
 		'	);',
 		'}',
 		
@@ -31,10 +31,10 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'{',
 			// Xc = R * Xw + t
 			// c = - R.t() * t <=> c = - t.t() * R
-		'	return - modelViewMatrix[3].xyz * rotation;',
+		'	return - viewMatrix[3].xyz * rotation;',
 		'}',
 
-		'vec2 getImagePlan(vec2 coord)',
+		'vec2 getImagePlan()',
 		'{',
 			// Extracting aspect from projection matrix:
 			// P = | e   0       0   0 |
@@ -45,7 +45,7 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'	float aspect = projectionMatrix[1].y / focal;',
 			
 			// Fix coordinate aspect and scale
-		'	return vec2( coord.x * aspect * screenScale, coord.y / aspect * screenScale );',
+		'	return vec2( ( uv.x - 0.5 ) * aspect * screenScale, ( uv.y - 0.5 ) * screenScale );',
 		'}',
 		
 		'vec3 getCamRay( in mat3 rotation, in vec2 screenUV )',
@@ -62,11 +62,11 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'	vCamPosition = camPosition;',
 		
 			// Return the intersection between the camera ray and a given plane
-		'	if(camPosition.y < groundHeight)',
+		'	if( camPosition.y < groundHeight )',
 		'		return vec3( 0.0, 0.0, 0.0 );',
 		
 			// Extract coordinate of the vertex on the image plan
-		'	vec2 screenUV = getImagePlan( ( projectionMatrix * vec4( position.xyz, 1.0 ) ).xy ) ;',
+		'	vec2 screenUV = getImagePlan() ;',
 			
 			// Compute the ray from camera to world
 		'	vec3 ray = getCamRay( cameraRotation, screenUV );',
