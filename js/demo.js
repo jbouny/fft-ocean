@@ -42,7 +42,7 @@ var DEMO =
 	InitializeScene : function InitializeScene() {
 		
 		// Add light
-		var mainDirectionalLight = new THREE.DirectionalLight( 0xffffff, 1.3 );
+		var mainDirectionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
 		mainDirectionalLight.position.set( -0.2, 1, 1 );
 		this.ms_Scene.add( mainDirectionalLight );
 		
@@ -106,17 +106,14 @@ var DEMO =
 			INITIAL_WIND : [ 10.0, 10.0 ],
 			INITIAL_CHOPPINESS : 1.8,
 			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
-			SUN_DIRECTION : [ -1.0, 1.0, 1.0 ],
-			OCEAN_COLOR: new THREE.Vector3( 0.004, 0.016, 0.047 ),
+			SUN_DIRECTION : mainDirectionalLight.position.clone(),
+			OCEAN_COLOR: new THREE.Vector3( 0.35, 0.4, 0.45 ),
 			SKY_COLOR: new THREE.Vector3( 10.0, 13.0, 15.0 ),
-			EXPOSURE : 0.25,
+			EXPOSURE : 0.15,
 			GEOMETRY_RESOLUTION: gres,
 			GEOMETRY_SIZE : gsize,
 			RESOLUTION : res
 		} );
-		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix = { type: "m4", value: this.ms_Camera.projectionMatrix };
-		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix = { type: "m4", value: this.ms_Camera.matrixWorldInverse };
-		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { type: "v3", value: this.ms_Camera.position };
 		this.ms_Scene.add( this.ms_Ocean.oceanMesh );
 		
 	},
@@ -138,18 +135,6 @@ var DEMO =
 		} );
 		gui.add( this.ms_Ocean, "windY", -15, 15 ).onChange( function ( v ) {
 			this.object.windY = v;
-			this.object.changed = true;
-		} );
-		gui.add( this.ms_Ocean, "sunDirectionX", -1.0, 1.0 ).onChange( function ( v ) {
-			this.object.sunDirectionX = v;
-			this.object.changed = true;
-		} );
-		gui.add( this.ms_Ocean, "sunDirectionY", -1.0, 1.0 ).onChange( function ( v ) {
-			this.object.sunDirectionY = v;
-			this.object.changed = true;
-		} );
-		gui.add( this.ms_Ocean, "sunDirectionZ", -1.0, 1.0 ).onChange( function ( v ) {
-			this.object.sunDirectionZ = v;
 			this.object.changed = true;
 		} );
 		gui.add( this.ms_Ocean, "exposure", 0.0, 0.5 ).onChange( function ( v ) {
@@ -248,19 +233,18 @@ var DEMO =
 		this.ms_Ocean.render( this.ms_Ocean.deltaTime );
 		this.ms_Camera.add( this.ms_Rain );
 		
+		// Updade clouds
 		this.ms_CloudShader.update();
+		
+		// Update ocean data
 		this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
 		if ( this.ms_Ocean.changed ) {
 			this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
-			this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.set( this.ms_Ocean.sunDirectionX, this.ms_Ocean.sunDirectionY, this.ms_Ocean.sunDirectionZ );
 			this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
 			this.ms_Ocean.changed = false;
 		}
 		this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer ;
 		this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer ;
-		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix.value = this.ms_Camera.projectionMatrix ;
-		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.ms_Camera.matrixWorldInverse ;
-		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.ms_Camera.position;
 		this.ms_Ocean.materialOcean.depthTest = true;
 		this.ms_Controls.update();
 		this.Display();
