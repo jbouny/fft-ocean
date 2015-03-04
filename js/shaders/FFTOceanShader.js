@@ -334,6 +334,8 @@ THREE.UniformsLib[ "oceanfft" ] = {
 THREE.ShaderChunk[ "oceanfft_pars_vertex" ] = [
 
 	'uniform sampler2D u_displacementMap;',
+	'uniform float u_geometrySize;',
+	'uniform float u_size;',
 		
 ].join('\n');
 
@@ -360,8 +362,6 @@ THREE.ShaderLib['ocean_main'] = {
 		'varying vec3 vWorldPosition;',
 		'varying vec4 vReflectCoordinates;',
 
-		'uniform float u_size;',
-		'uniform float u_geometrySize;',
 		'uniform mat4 u_mirrorMatrix;',
 		
 		THREE.ShaderChunk[ "screenplane_pars_vertex" ],
@@ -386,11 +386,9 @@ THREE.ShaderLib['ocean_main'] = {
 		'varying vec3 vWorldPosition;',
 		'varying vec4 vReflectCoordinates;',
 
-		'uniform sampler2D u_displacementMap;',
 		'uniform sampler2D u_reflection;',
 		'uniform sampler2D u_normalMap;',
 		'uniform vec3 u_oceanColor;',
-		'uniform vec3 u_skyColor;',
 		'uniform vec3 u_sunDirection;',
 		'uniform float u_exposure;',
 
