@@ -5,6 +5,19 @@ var DEMO =
 	ms_Scene : null,
 	ms_Controls : null,
 	ms_Ocean : null,
+	
+	ms_Commands : {
+		states : {
+			up : false,
+			right : false,
+			down : false,
+			left : false
+		},
+		movements : {
+			speed : 0.0,
+			angle : 0.0
+		}
+	},
 
 	Initialize : function () {
 
@@ -17,17 +30,20 @@ var DEMO =
 		this.ms_Scene = new THREE.Scene();
 
 		this.ms_GroupShip = new THREE.Object3D();
+		this.ms_BlackPearlShip = new THREE.Object3D();
 		this.ms_Scene.add( this.ms_GroupShip );
+		this.ms_GroupShip.add( this.ms_BlackPearlShip );
 		
 		this.ms_Camera = new THREE.PerspectiveCamera( 55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 300000 );
-		this.ms_Camera.position.set( 450, 350, 450 );
+		this.ms_Camera.position.set( 0, 350, 800 );
 		this.ms_Camera.lookAt( new THREE.Vector3() );
-		this.ms_GroupShip.add( this.ms_Camera );
+		this.ms_BlackPearlShip.add( this.ms_Camera );
 		
 		// Initialize Orbit control		
 		this.ms_Controls = new THREE.OrbitControls( this.ms_Camera, this.ms_Renderer.domElement );
 		this.ms_Controls.userPan = false;
-		this.ms_Controls.userPanSpeed = 0.0;
+		this.ms_Controls.noKeys = true;
+		this.ms_Controls.userPanSpeed = 0;
 		this.ms_Controls.minDistance = 0;
 		this.ms_Controls.maxDistance = 20000.0;
 		this.ms_Controls.minPolarAngle = 0;
@@ -36,6 +52,7 @@ var DEMO =
 		this.InitializeScene();
 		
 		this.InitGui();
+		this.InitCommands();
 		
 	},
 	
@@ -57,7 +74,7 @@ var DEMO =
 				}
 			}
 			
-			DEMO.ms_GroupShip.add( object );
+			DEMO.ms_BlackPearlShip.add( object );
 			DEMO.ms_BlackPearl = object;
 		} );
 		
@@ -97,7 +114,7 @@ var DEMO =
 		// Initialize Ocean
 		var gsize = 512; 
 		var res = 512; 
-		var gres = 256;
+		var gres = 128;
 		var origx = -gsize / 2;
 		var origz = -gsize / 2;
 		this.ms_Ocean = new THREE.Ocean( this.ms_Renderer, this.ms_Camera, this.ms_Scene,
@@ -113,14 +130,14 @@ var DEMO =
 			GEOMETRY_RESOLUTION: gres,
 			GEOMETRY_SIZE : gsize,
 			RESOLUTION : res
-		} );
-		this.ms_Scene.add( this.ms_Ocean.oceanMesh );
-		
+		} );		
 	},
 	
 	InitGui : function InitGui() {
+	
 		// Initialize UI
 		var gui = new dat.GUI();
+		dat.GUI.toggleHide();
 		gui.add( this.ms_Ocean, "size", 10, 2000 ).onChange( function( v ) {
 			this.object.size = v;
 			this.object.changed = true;
@@ -129,11 +146,11 @@ var DEMO =
 			this.object.choppiness = v;
 			this.object.changed = true;
 		} );
-		gui.add( this.ms_Ocean, "windX", -15, 15 ).onChange( function ( v ) {
+		gui.add( this.ms_Ocean, "windX", -50, 50 ).onChange( function ( v ) {
 			this.object.windX = v;
 			this.object.changed = true;
 		} );
-		gui.add( this.ms_Ocean, "windY", -15, 15 ).onChange( function ( v ) {
+		gui.add( this.ms_Ocean, "windY", -50, 50 ).onChange( function ( v ) {
 			this.object.windY = v;
 			this.object.changed = true;
 		} );
@@ -141,9 +158,35 @@ var DEMO =
 			this.object.exposure = v;
 			this.object.changed = true;
 		} );
+		
+	},
+	
+	InitCommands : function InitCommands() {
+		var LEFT = 37,
+			UP = 38,
+			RIGHT = 39,
+			DOWN = 40;
+			
+		var keyHandler = function keyHandler( action ) {
+			return function( event ) {
+				var key = event.which;
+				if( key >= LEFT && key <= DOWN ) {
+					switch( key ) {
+						case UP : DEMO.ms_Commands.states.up = action ; break ;
+						case RIGHT : DEMO.ms_Commands.states.right = action ; break ;
+						case DOWN : DEMO.ms_Commands.states.down = action ; break ;
+						case LEFT : DEMO.ms_Commands.states.left = action ; break ;
+					}
+				}
+			}
+		}
+			
+		$( document ).keydown( keyHandler( true ) );
+		$( document ).keyup( keyHandler( false ) );
 	},
 
 	LoadSkyBox : function LoadSkyBox() {
+	
 		var aCubeMap = THREE.ImageUtils.loadTextureCube( [
 			//*
 			'img/grimmnight_west.jpg',
@@ -200,13 +243,22 @@ var DEMO =
 
 	Update : function () {
 	
+		// Update black ship displacements
+		this.UpdateCommands();
+		this.ms_GroupShip.rotation.y += this.ms_Commands.movements.angle;
+		this.ms_BlackPearlShip.rotation.z = -this.ms_Commands.movements.angle * 10.0;
+		this.ms_BlackPearlShip.rotation.x = this.ms_Commands.movements.speed * 0.1;
+		var shipDisplacement = (new THREE.Vector3(0, 0, -1)).applyEuler(this.ms_GroupShip.rotation).multiplyScalar( 10.0 * this.ms_Commands.movements.speed );
+		this.ms_GroupShip.position.add( shipDisplacement );
+	
 		var currentTime = new Date().getTime();
 		this.ms_Ocean.deltaTime = ( currentTime - lastTime ) / 1000 || 0.0;
 		lastTime = currentTime;
 		
-		// Update black ship
+		// Update black ship movements
 		if( this.ms_BlackPearl !== null )
 		{
+			var animationRatio = 1.0 + this.ms_Commands.movements.speed * 1.0;
 			this.ms_BlackPearl.rotation.y = Math.cos( currentTime * 0.0008 ) * 0.05 - 0.025;
 			this.ms_BlackPearl.rotation.x = Math.sin( currentTime * 0.001154 + 0.78 ) * 0.1 + 0.05;
 		}
@@ -249,6 +301,44 @@ var DEMO =
 		this.ms_Controls.update();
 		this.Display();
 		
+	},
+	
+	ms_Commands : {
+		states : {
+			up : false,
+			right : false,
+			down : false,
+			left : false
+		},
+		movements : {
+			speed : 0.0,
+			angle : 0.0
+		}
+	},
+	UpdateCommands : function UpdateCommands() {
+		var states = this.ms_Commands.states;
+		
+		// Update speed
+		var targetSpeed = 0.0;
+		if( states.up ) {
+			targetSpeed = 1.0;
+		}
+		else if( states.down ) {
+			targetSpeed = -0.5;
+		}
+		var curSpeed = this.ms_Commands.movements.speed ;
+		this.ms_Commands.movements.speed = curSpeed + ( targetSpeed - curSpeed ) * 0.02;
+		
+		// Update angle
+		var targetAngle = 0.0;
+		if( states.left ) {
+			targetAngle = Math.PI * 0.005;
+		}
+		else if( states.right ) {
+			targetAngle = -Math.PI * 0.005;
+		}
+		var curAngle = this.ms_Commands.movements.angle ;
+		this.ms_Commands.movements.angle = curAngle + ( targetAngle - curAngle ) * 0.02;
 	},
 
 	Resize : function ( inWidth, inHeight ) {
