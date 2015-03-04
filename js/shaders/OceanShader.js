@@ -54,21 +54,19 @@ THREE.ShaderLib['ocean_main'] = {
 			// Compute the specular factor
 			'vec3 reflection = normalize( reflect( -u_sunDirection, normal ) );',
 			'float specularFactor = pow( max( 0.0, dot( view, reflection ) ), 200.0 ) * 20.0;',
+		
+			// Get reflection color
+			'vec3 distortion = 200.0 * normal * vec3( 1.0, 0.0, 0.1 );',	
+			'vec3 reflectionColor = texture2DProj( u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
 			
-			// Compute a ratio determined by the distance from the camera
+			// Smooth the normal following the distance
 			'float distanceRatio = min( 1.0, log( 1.0 / length( vCamPosition - vWorldPosition ) * 3000.0 + 1.0 ) );',
 			'distanceRatio *= distanceRatio;',
 			'distanceRatio = distanceRatio * 0.9 + 0.1;',
-			
-			// Smooth the normal follwing the distance
 			'normal *= distanceRatio;',
 			
 			// Compute the fresnel ratio
 			'float fresnel = pow( 1.0 - dot( normal, view ), 2.0 );',
-		
-			// Get reflection color
-			'vec3 distortion = distanceRatio * 80.0 * ( normal - vec3( 0.0, 1.0, 0 ) ) * vec3( 1.0, 0.0, 0.2 );',	
-			'vec3 reflectionColor = texture2DProj( u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
 			
 			// Compute the sky reflection and the water color
 			'float skyFactor = fresnel * 10.0;',
