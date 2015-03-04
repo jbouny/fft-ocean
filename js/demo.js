@@ -16,10 +16,13 @@ var DEMO =
 
 		this.ms_Scene = new THREE.Scene();
 
+		this.ms_GroupShip = new THREE.Object3D();
+		this.ms_Scene.add( this.ms_GroupShip );
+		
 		this.ms_Camera = new THREE.PerspectiveCamera( 55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 300000 );
 		this.ms_Camera.position.set( 450, 350, 450 );
 		this.ms_Camera.lookAt( new THREE.Vector3() );
-		this.ms_Scene.add( this.ms_Camera );
+		this.ms_GroupShip.add( this.ms_Camera );
 		
 		// Initialize Orbit control		
 		this.ms_Controls = new THREE.OrbitControls( this.ms_Camera, this.ms_Renderer.domElement );
@@ -54,7 +57,7 @@ var DEMO =
 				}
 			}
 			
-			DEMO.ms_Scene.add( object );
+			DEMO.ms_GroupShip.add( object );
 			DEMO.ms_BlackPearl = object;
 		} );
 		
