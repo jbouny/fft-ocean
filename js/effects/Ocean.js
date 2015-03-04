@@ -27,10 +27,7 @@
 		return value !== undefined ? value[index] : defaultValue;
 	};
 	options = options || {};
-	this.clearColor = optionalParameter(options.CLEAR_COLOR, [1.0, 1.0, 1.0, 0.0]);
-	this.sunDirectionX = optionalParameterArray(options.SUN_DIRECTION, 0, -1.0);
-	this.sunDirectionY = optionalParameterArray(options.SUN_DIRECTION, 1, 1.0);
-	this.sunDirectionZ = optionalParameterArray(options.SUN_DIRECTION, 2, 1.0);
+	this.sunDirection = optionalParameter(options.SUN_DIRECTION, new THREE.Vector3(-1.0, 1.0, 1.0 ));
 	this.oceanColor = optionalParameter(options.OCEAN_COLOR, new THREE.Vector3(0.004, 0.016, 0.047));
 	this.skyColor = optionalParameter(options.SKY_COLOR, new THREE.Vector3(3.2, 9.6, 12.8));
 	this.exposure = optionalParameter(options.EXPOSURE, 0.35);
@@ -177,7 +174,7 @@
 	this.materialOcean.uniforms.u_normalMap = { type: "t", value: this.normalMapFramebuffer }; 
 	this.materialOcean.uniforms.u_oceanColor = { type: "v3", value: this.oceanColor }; 
 	this.materialOcean.uniforms.u_skyColor = { type: "v3", value: this.skyColor };
-	this.materialOcean.uniforms.u_sunDirection = { type: "v3", value: new THREE.Vector3( this.sunDirectionX, this.sunDirectionY, this.sunDirectionZ ) };
+	this.materialOcean.uniforms.u_sunDirection = { type: "v3", value: this.sunDirection };
 	this.materialOcean.uniforms.u_exposure = { type: "f", value: this.exposure };
 
 	// Disable blending to prevent default premultiplied alpha values
