@@ -354,13 +354,13 @@ THREE.ShaderLib['ocean_main'] = {
 			THREE.ShaderChunk["screenplane_vertex"],
 			
 			'float distanceRatio = min( 1.0, log( 1.0 / length( u_viewMatrix * vWorldPosition ) * 500.0 + 1.0 ) );',
-			'vec3 displacement = texture2D(u_displacementMap, vWorldPosition.xz * 0.003).rgb * (u_geometrySize / u_size) * distanceRatio;',
+			'vec3 displacement = texture2D( u_displacementMap, vWorldPosition.xz * 0.003 ).rgb * ( u_geometrySize / u_size ) * distanceRatio;',
 			
 			'vec3 newPos = vWorldPosition.xyz + displacement;',
 			'vPos = newPos;',
 			'vUV = uv;',
-			'vReflectCoordinates = u_mirrorMatrix * vec4(newPos, 1.0);',
-			'gl_Position = u_projectionMatrix * u_viewMatrix * vec4(newPos + vec3( 0.0, 0.0, 0.0 ), 1.0);',
+			'vReflectCoordinates = u_mirrorMatrix * vec4( newPos, 1.0 );',
+			'gl_Position = u_projectionMatrix * u_viewMatrix * vec4( newPos + vec3( 0.0, 0.0, 0.0 ), 1.0 );',
 		'}'
 	].join('\n'),
 	fragmentShader: [
@@ -386,28 +386,37 @@ THREE.ShaderLib['ocean_main'] = {
 		THREE.ShaderChunk["screenplane_pars_fragment"],
 
 		'void main (void) {',
-			'vec3 normal = texture2D(u_normalMap, vPos.xz * 0.003).rgb;',
-
-			'vec3 view = normalize(u_cameraPosition - vPos);',
-			'float distanceRatio = min( 1.0, log( 1.0 / length( u_cameraPosition - vPos ) * 1000.0 + 1.0 ) );',
+			'vec3 normal = texture2D( u_normalMap, vPos.xz * 0.003 ).rgb;',
+			'vec3 view = normalize( u_cameraPosition - vPos );',
+			
+			// Compute the specular factor
+			'vec3 reflection = normalize( reflect( -u_sunDirection, normal ) );',
+			'float specularFactor = pow( max( 0.0, dot( view, reflection ) ), 200.0 ) * 20.0;',
+			
+			// Compute a ratio determined by the distance from the camera
+			'float distanceRatio = min( 1.0, log( 1.0 / length( u_cameraPosition - vPos ) * 3000.0 + 1.0 ) );',
 			'distanceRatio *= distanceRatio;',
-			'distanceRatio = distanceRatio * 0.3 + 0.65;',
-			'float fresnel = ( 1.0 - distanceRatio ) + distanceRatio * pow(1.0 - dot(normal, view), 3.0);',
+			'distanceRatio = distanceRatio * 0.9 + 0.1;',
+			
+			// Smooth the normal follwing the distance
+			'normal *= distanceRatio;',
+			
+			// Compute the fresnel ratio
+			'float fresnel = pow( 1.0 - dot( normal, view ), 2.0 );',
 		
-			'vec3 distortion = ( normal * distanceRatio * 50.0 - vec3( 0.0, distanceRatio * 50.0, 0 ) ) * vec3( 1.0, 0.0, 0.0 );',	
-			'vec3 reflectionSample = texture2DProj(u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
+			// Get reflection color
+			'vec3 distortion = distanceRatio * 80.0 * ( normal - vec3( 0.0, 1.0, 0 ) ) * vec3( 1.0, 0.0, 0.2 );',	
+			'vec3 reflectionColor = texture2DProj( u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
 			
-			'vec3 sky = fresnel * reflectionSample * 10.0;',
-
-			'vec3 water = (1.0 - fresnel) * u_oceanColor;',
-
-			'vec3 color = sky * distanceRatio + water * reflectionSample * 10.0;',
-			'color = color * distanceRatio + reflectionSample * 10.0 * (1.0 - distanceRatio);',
-			'color = hdr(color, u_exposure);',
+			// Compute the sky reflection and the water color
+			'float skyFactor = fresnel * 10.0;',
+			'vec3 waterColor = ( 1.0 - fresnel ) * u_oceanColor;',
 			
-			//'color = u_oceanColor * ( 1.0 - distanceRatio ) + color * distanceRatio;',
+			// Compute the final color
+			'vec3 color = ( skyFactor + specularFactor + waterColor ) * reflectionColor + waterColor * 0.5 ;',
+			'color = hdr( color, u_exposure );',
 
-			'gl_FragColor = vec4(color, 1.0);',
+			'gl_FragColor = vec4( color, 1.0 );',
 		'}'
 	].join('\n')
 };
