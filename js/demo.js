@@ -24,6 +24,7 @@ var DEMO =
 		this.ms_Renderer = new THREE.WebGLRenderer();
 		this.ms_Renderer.context.getExtension( 'OES_texture_float' );
 		this.ms_Renderer.context.getExtension( 'OES_texture_float_linear' );
+		this.ms_Renderer.setClearColor( 0x000000 );
 
 		document.body.appendChild( this.ms_Renderer.domElement );
 
@@ -79,6 +80,9 @@ var DEMO =
 			DEMO.ms_BlackPearl = object;
 		} );
 		
+		this.LoadSkyBox();
+		this.LoadMountains();
+		
 		// Add rain
 		{
 			var size = 128;
@@ -88,7 +92,8 @@ var DEMO =
 				uniforms: { texture: { type: 't', value: rainTexture } }, 
 				vertexShader: document.getElementById('vertexShader').textContent,
 				fragmentShader: document.getElementById('fragmentShader').textContent,
-				transparent: true
+				transparent: true,
+				depthWrite: false
 			});
 			
 			this.ms_RainGeometry = new THREE.Geometry();
@@ -105,11 +110,9 @@ var DEMO =
 			this.ms_Rain.position.setZ( - size * 0.75 ) ;
 		}
 		
-		this.LoadSkyBox();
-		
 		// Initialize Clouds
 		this.ms_CloudShader = new CloudShader( this.ms_Renderer );
-		this.ms_CloudShader.cloudMesh.scale.multiplyScalar( 3 );
+		this.ms_CloudShader.cloudMesh.scale.multiplyScalar( 2 );
 		this.ms_Scene.add( this.ms_CloudShader.cloudMesh );
 		
 		// Initialize Ocean
@@ -163,6 +166,7 @@ var DEMO =
 	},
 	
 	InitCommands : function InitCommands() {
+	
 		var LEFT = 37,
 			UP = 38,
 			RIGHT = 39,
@@ -184,55 +188,68 @@ var DEMO =
 			
 		$( document ).keydown( keyHandler( true ) );
 		$( document ).keyup( keyHandler( false ) );
+		
+	},
+	
+	LoadMountains : function LoadSkyBox() {
+	
+		var demo = this;
+		
+		var mountainsMaterial = new THREE.MeshBasicMaterial( { 
+			map: THREE.ImageUtils.loadTexture('img/mountains.png'), 
+			transparent: true,
+			side: THREE.BackSide,
+			depthWrite: false
+		} );
+			
+		var addMountain = function addMountain( size ) {
+			
+			var moutains = new THREE.Mesh(
+				new THREE.CylinderGeometry( size, size, 18000, 32, 1, true ),
+				mountainsMaterial
+			);
+			moutains.position.y = 5000;
+			demo.ms_Scene.add( moutains );
+			
+		} ;
+		
+		// Add twice with different size in order to avoid some artifacts on the reflection
+		addMountain( 70000 );
+		addMountain( 85000 );
+		
 	},
 
 	LoadSkyBox : function LoadSkyBox() {
 	
-		var aCubeMap = THREE.ImageUtils.loadTextureCube( [
-			//*
-			'img/grimmnight_west.jpg',
-			'img/grimmnight_east.jpg',
-			'img/grimmnight_up.jpg',
-			'img/grimmnight_down.jpg',
-			'img/grimmnight_south.jpg',
-			'img/grimmnight_north.jpg',
-			/*/
-			'img/px.jpg',
-			'img/nx.jpg',
-			'img/py.jpg',
-			'img/ny.jpg',
-			'img/pz.jpg',
-			'img/nz.jpg',
-			//*/
-			/*
-			'img/skybox_0.jpg',
-			'img/skybox_1.jpg',
-			'img/skybox_2.jpg',
-			'img/skybox_3.jpg',
-			'img/skybox_4.jpg',
-			'img/skybox_5.jpg',
-			//*/
-
+		var textureName = "grimmnight"; // clouds, sky, grimmnight
+		var textureExt = ".jpg";
+	
+		var cubeMap = THREE.ImageUtils.loadTextureCube( [
+			'img/' + textureName + '_west' + textureExt,
+			'img/' + textureName + '_east' + textureExt,
+			'img/' + textureName + '_up' + textureExt,
+			'img/' + textureName + '_down' + textureExt,
+			'img/' + textureName + '_south' + textureExt,
+			'img/' + textureName + '_north' + textureExt
 		] );
-		aCubeMap.format = THREE.RGBFormat;
+		cubeMap.format = THREE.RGBFormat;
 
-		var aShader = THREE.ShaderLib['cube'];
-		aShader.uniforms['tCube'].value = aCubeMap;
+		var cubeShader = THREE.ShaderLib['cube'];
+		cubeShader.uniforms['tCube'].value = cubeMap;
 
-		var aSkyBoxMaterial = new THREE.ShaderMaterial( {
-		  fragmentShader: aShader.fragmentShader,
-		  vertexShader: aShader.vertexShader,
-		  uniforms: aShader.uniforms,
-		  depthWrite: false,
-		  side: THREE.BackSide
+		var skyBoxMaterial = new THREE.ShaderMaterial( {
+			fragmentShader: cubeShader.fragmentShader,
+			vertexShader: cubeShader.vertexShader,
+			uniforms: cubeShader.uniforms,
+			side: THREE.BackSide
 		} );
 
-		var aSkybox = new THREE.Mesh(
-		  new THREE.BoxGeometry( 200000, 200000, 200000 ),
-		  aSkyBoxMaterial
+		this.ms_SkyBox = new THREE.Mesh(
+			new THREE.BoxGeometry( 200000, 200000, 200000 ),
+			skyBoxMaterial
 		);
 		
-		this.ms_Scene.add( aSkybox );
+		this.ms_Scene.add( this.ms_SkyBox );
 		
 	},
 	
@@ -243,6 +260,7 @@ var DEMO =
 	},
 
 	Update : function () {
+	
 		// Update camera position
 		if( this.ms_Camera.position.y < 0.0 ) {
 			this.ms_Camera.position.y = 2.0;
@@ -308,19 +326,8 @@ var DEMO =
 		
 	},
 	
-	ms_Commands : {
-		states : {
-			up : false,
-			right : false,
-			down : false,
-			left : false
-		},
-		movements : {
-			speed : 0.0,
-			angle : 0.0
-		}
-	},
 	UpdateCommands : function UpdateCommands() {
+	
 		var states = this.ms_Commands.states;
 		
 		// Update speed
@@ -344,6 +351,7 @@ var DEMO =
 		}
 		var curAngle = this.ms_Commands.movements.angle ;
 		this.ms_Commands.movements.angle = curAngle + ( targetAngle - curAngle ) * 0.02;
+		
 	},
 
 	Resize : function ( inWidth, inHeight ) {
