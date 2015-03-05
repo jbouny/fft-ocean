@@ -163,7 +163,7 @@ var DEMO =
 			this.object.exposure = v;
 			this.object.changed = true;
 		} );
-		gui.add( this, "environment", [ 'night', 'morning', 'day' ] ).onChange( function ( v ) {
+		gui.add( this, "environment", [ 'night', 'morning', 'day', 'sunset' ] ).onChange( function ( v ) {
 			DEMO.UpdateEnvironment();
 		} );
 		
@@ -263,21 +263,36 @@ var DEMO =
 	
 		var textureName = '';
 		var textureExt = ".jpg";
+		var directionalLightPosition = null;
+		var directionalLightColor = null;
 		
 		switch( this.environment ) {
 			case 'night':
 				textureName = 'grimmnight'; 
-				this.ms_MainDirectionalLight.position.set( -0.2, 0.5, 1 );
+				directionalLightPosition = new THREE.Vector3( -0.2, 0.3, 1 );
+				directionalLightColor = new THREE.Color( 1, 1, 1 );
 				break;
 			case 'day':
 				textureName = 'sky'; 
-				this.ms_MainDirectionalLight.position.set( -1, 0.5, -0.5 );
+				directionalLightPosition = new THREE.Vector3( -1, 0.5, -0.5 );
+				directionalLightColor = new THREE.Color( 1, 0.95, 0.9 );
 				break;
 			case 'morning':
 				textureName = 'clouds'; 
-				this.ms_MainDirectionalLight.position.set( -1, 0.5, 0.8 );
+				directionalLightPosition = new THREE.Vector3( -1, 0.5, 0.8 );
+				directionalLightColor = new THREE.Color( 1, 0.95, 0.8 );
 				break;
+			case 'sunset':
+				textureName = 'sunset'; 
+				directionalLightPosition = new THREE.Vector3( -0.3, 0.2, -1 );
+				directionalLightColor = new THREE.Color( 1, 0.8, 0.5 );
+				break;
+			default:
+				return;
 		};
+		
+		this.ms_MainDirectionalLight.position.copy( directionalLightPosition );
+		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
 		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );
 	
 		var cubeMap = THREE.ImageUtils.loadTextureCube( [
@@ -356,7 +371,8 @@ var DEMO =
 		// Render ocean reflection
 		this.ms_Camera.remove( this.ms_Rain );
 		this.ms_Ocean.render( this.ms_Ocean.deltaTime );
-		this.ms_Camera.add( this.ms_Rain );
+		if( this.environment === 'night' )
+			this.ms_Camera.add( this.ms_Rain );
 		
 		// Updade clouds
 		this.ms_CloudShader.update();
