@@ -5,6 +5,7 @@ var DEMO =
 	ms_Scene : null,
 	ms_Controls : null,
 	ms_Ocean : null,
+	environment : "night",
 	
 	ms_Commands : {
 		states : {
@@ -61,9 +62,9 @@ var DEMO =
 	InitializeScene : function InitializeScene() {
 		
 		// Add light
-		var mainDirectionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
-		mainDirectionalLight.position.set( -0.2, 1, 1 );
-		this.ms_Scene.add( mainDirectionalLight );
+		this.ms_MainDirectionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+		this.ms_MainDirectionalLight.position.set( -0.2, 0.5, 1 );
+		this.ms_Scene.add( this.ms_MainDirectionalLight );
 		
 		// Add Black Pearl
 		var loader = new THREE.OBJMTLLoader();
@@ -79,9 +80,6 @@ var DEMO =
 			DEMO.ms_BlackPearlShip.add( object );
 			DEMO.ms_BlackPearl = object;
 		} );
-		
-		this.LoadSkyBox();
-		this.LoadMountains();
 		
 		// Add rain
 		{
@@ -127,21 +125,24 @@ var DEMO =
 			INITIAL_WIND : [ 10.0, 10.0 ],
 			INITIAL_CHOPPINESS : 1.8,
 			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
-			SUN_DIRECTION : mainDirectionalLight.position.clone(),
+			SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(),
 			OCEAN_COLOR: new THREE.Vector3( 0.35, 0.4, 0.45 ),
 			SKY_COLOR: new THREE.Vector3( 10.0, 13.0, 15.0 ),
 			EXPOSURE : 0.15,
 			GEOMETRY_RESOLUTION: gres,
 			GEOMETRY_SIZE : gsize,
 			RESOLUTION : res
-		} );		
+		} );	
+		
+		this.LoadSkyBox();
+		this.LoadMountains();	
 	},
 	
 	InitGui : function InitGui() {
 	
 		// Initialize UI
 		var gui = new dat.GUI();
-		dat.GUI.toggleHide();
+		//dat.GUI.toggleHide();
 		gui.add( this.ms_Ocean, "size", 10, 2000 ).onChange( function( v ) {
 			this.object.size = v;
 			this.object.changed = true;
@@ -161,6 +162,9 @@ var DEMO =
 		gui.add( this.ms_Ocean, "exposure", 0.0, 0.5 ).onChange( function ( v ) {
 			this.object.exposure = v;
 			this.object.changed = true;
+		} );
+		gui.add( this, "environment", [ 'night', 'morning', 'day' ] ).onChange( function ( v ) {
+			DEMO.UpdateEnvironment();
 		} );
 		
 	},
@@ -251,6 +255,52 @@ var DEMO =
 		
 		this.ms_Scene.add( this.ms_SkyBox );
 		
+		this.UpdateEnvironment();
+		
+	},
+
+	UpdateEnvironment : function UpdateEnvironment() {
+	
+		var textureName = '';
+		var textureExt = ".jpg";
+		
+		switch( this.environment ) {
+			case 'night':
+				textureName = 'grimmnight'; 
+				this.ms_MainDirectionalLight.position.set( -0.2, 0.5, 1 );
+				break;
+			case 'day':
+				textureName = 'sky'; 
+				this.ms_MainDirectionalLight.position.set( -1, 0.5, -0.5 );
+				break;
+			case 'morning':
+				textureName = 'clouds'; 
+				this.ms_MainDirectionalLight.position.set( -1, 0.5, 0.8 );
+				break;
+		};
+		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );
+	
+		var cubeMap = THREE.ImageUtils.loadTextureCube( [
+			'img/' + textureName + '_west' + textureExt,
+			'img/' + textureName + '_east' + textureExt,
+			'img/' + textureName + '_up' + textureExt,
+			'img/' + textureName + '_down' + textureExt,
+			'img/' + textureName + '_south' + textureExt,
+			'img/' + textureName + '_north' + textureExt
+		] );
+		cubeMap.format = THREE.RGBFormat;
+
+		var cubeShader = THREE.ShaderLib['cube'];
+		cubeShader.uniforms['tCube'].value = cubeMap;
+
+		var skyBoxMaterial = new THREE.ShaderMaterial( {
+			fragmentShader: cubeShader.fragmentShader,
+			vertexShader: cubeShader.vertexShader,
+			uniforms: cubeShader.uniforms,
+			side: THREE.BackSide
+		} );
+		
+		this.ms_SkyBox.material = skyBoxMaterial;
 	},
 	
 	Display : function () {
