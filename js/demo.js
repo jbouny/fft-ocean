@@ -1,11 +1,15 @@
-﻿var DEMO =
+﻿/**
+ * @author jbouny / https://github.com/fft-ocean
+ */
+
+var DEMO =
 {
 	ms_Renderer : null,
 	ms_Camera : null,
 	ms_Scene : null,
 	ms_Controls : null,
 	ms_Ocean : null,
-	environment : "sunset",
+	environment : "night",
 	ms_Raining : false,
 	
 	ms_Commands : {
@@ -37,7 +41,7 @@
 		this.ms_Scene.add( this.ms_GroupShip );
 		this.ms_GroupShip.add( this.ms_BlackPearlShip );
 		
-		this.ms_Camera = new THREE.PerspectiveCamera( 55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 250000 );
+		this.ms_Camera = new THREE.PerspectiveCamera( 55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 1000000 );
 		this.ms_Camera.position.set( 0, 350, 800 );
 		this.ms_Camera.lookAt( new THREE.Vector3() );
 		this.ms_BlackPearlShip.add( this.ms_Camera );
@@ -111,7 +115,7 @@
 		
 		// Initialize Clouds
 		this.ms_CloudShader = new CloudShader( this.ms_Renderer );
-		this.ms_CloudShader.cloudMesh.scale.multiplyScalar( 2 );
+		this.ms_CloudShader.cloudMesh.scale.multiplyScalar( 4.0 );
 		this.ms_Scene.add( this.ms_CloudShader.cloudMesh );
 		
 		// Initialize Ocean
@@ -215,25 +219,25 @@
 		var addMountain = function addMountain( size ) {
 			
 			var moutains = new THREE.Mesh(
-				new THREE.CylinderGeometry( size, size, 18000, 32, 1, true ),
+				new THREE.CylinderGeometry( size, size, 35000, 32, 1, true ),
 				mountainsMaterial
 			);
-			moutains.position.y = 5000;
+			moutains.position.y = 10000;
 			demo.ms_Scene.add( moutains );
 			
 		} ;
 		
 		// Add twice with different size in order to avoid some artifacts on the reflection
-		addMountain( 70000 );
-		addMountain( 85000 );
+		addMountain( 120000 );
+		addMountain( 150000 );
 		
 		// Add a black cylinder to hide the skybox under the water
-		var moutains = new THREE.Mesh(
-			new THREE.CylinderGeometry( 90000, 90000, 100000, 32, 1, true ),
+		var cylinder = new THREE.Mesh(
+			new THREE.CylinderGeometry( 150000, 150000, 150000, 32, 1, true ),
 			new THREE.MeshBasicMaterial( { color: "0xffffff", side: THREE.BackSide } )
 		);
-		moutains.position.y = -51000;
-		demo.ms_Scene.add( moutains );
+		cylinder.position.y = -80000;
+		demo.ms_Scene.add( cylinder );
 		
 	},
 
@@ -249,7 +253,7 @@
 		} );
 
 		this.ms_SkyBox = new THREE.Mesh(
-			new THREE.BoxGeometry( 200000, 200000, 200000 ),
+			new THREE.BoxGeometry( 450000, 450000, 450000 ),
 			skyBoxMaterial
 		);
 		

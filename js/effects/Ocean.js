@@ -1,4 +1,11 @@
-﻿THREE.Ocean = function (renderer, camera, scene, options) {
+﻿/**
+ * @author jbouny / https://github.com/fft-ocean
+ *
+ * Based on:
+ * @author Aleksandr Albert / http://www.routter.co.tt
+ */
+
+THREE.Ocean = function (renderer, camera, scene, options) {
 	// flag used to trigger parameter changes
 	this.changed = true;
 	this.initial = true;
