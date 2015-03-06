@@ -62,14 +62,16 @@ THREE.ShaderLib['ocean_main'] = {
 			// Smooth the normal following the distance
 			'float distanceRatio = min( 1.0, log( 1.0 / length( vCamPosition - vWorldPosition ) * 3000.0 + 1.0 ) );',
 			'distanceRatio *= distanceRatio;',
-			'distanceRatio = distanceRatio * 0.9 + 0.1;',
-			'normal *= distanceRatio;',
+			'distanceRatio = distanceRatio * 0.7 + 0.3;',
+			//'distanceRatio = 1.0;',
+			'normal = ( distanceRatio * normal + vec3( 0.0, 1.0 - distanceRatio, 0.0 ) ) / 2.0;',
+			'normal /= length( normal );',
 			
 			// Compute the fresnel ratio
 			'float fresnel = pow( 1.0 - dot( normal, view ), 2.0 );',
 			
 			// Compute the sky reflection and the water color
-			'float skyFactor = fresnel * 10.0;',
+			'float skyFactor = ( fresnel + 0.2 ) * 10.0;',
 			'vec3 waterColor = ( 1.0 - fresnel ) * u_oceanColor;',
 			
 			// Compute the final color
