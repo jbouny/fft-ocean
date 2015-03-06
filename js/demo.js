@@ -1,4 +1,4 @@
-var DEMO =
+﻿var DEMO =
 {
 	ms_Renderer : null,
 	ms_Camera : null,
@@ -142,7 +142,7 @@ var DEMO =
 	
 		// Initialize UI
 		var gui = new dat.GUI();
-		//dat.GUI.toggleHide();
+		dat.GUI.toggleHide();
 		gui.add( this.ms_Ocean, "size", 10, 2000 ).onChange( function( v ) {
 			this.object.size = v;
 			this.object.changed = true;
@@ -163,10 +163,15 @@ var DEMO =
 			this.object.exposure = v;
 			this.object.changed = true;
 		} );
-		gui.add( this, "environment", [ 'night', 'morning', 'day', 'sunset' ] ).onChange( function ( v ) {
-			DEMO.UpdateEnvironment();
-		} );
 		
+		var demo = this;
+		$( '#env-selector > ul > li' ).click( function() {
+			demo.UpdateEnvironment( $( this ).attr('key') );
+			
+			$( '#env-selector > ul > li' ).removeClass( 'selected' );
+			$( this ).addClass( 'selected' );
+		} ) ;
+					
 	},
 	
 	InitCommands : function InitCommands() {
@@ -255,18 +260,21 @@ var DEMO =
 		
 		this.ms_Scene.add( this.ms_SkyBox );
 		
-		this.UpdateEnvironment();
+		this.UpdateEnvironment( this.environment );
 		
 	},
 
-	UpdateEnvironment : function UpdateEnvironment() {
+	UpdateEnvironment : function UpdateEnvironment( key ) {
+	
+		if( key === this.environment )
+			return ;
 	
 		var textureName = '';
 		var textureExt = ".jpg";
 		var directionalLightPosition = null;
 		var directionalLightColor = null;
 		
-		switch( this.environment ) {
+		switch( key ) {
 			case 'night':
 				textureName = 'grimmnight'; 
 				directionalLightPosition = new THREE.Vector3( -0.2, 0.3, 1 );
@@ -291,6 +299,7 @@ var DEMO =
 				return;
 		};
 		
+		this.environment = key;
 		this.ms_MainDirectionalLight.position.copy( directionalLightPosition );
 		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
 		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );

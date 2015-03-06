@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">	
 	<head>
 		<meta charset="utf-8" />
@@ -8,9 +8,53 @@
 				margin: 0px;
 				overflow: hidden;
 			}
+			
+			#env-selector {
+				position: absolute;
+				left: 5px;
+				top: 10px;
+				z-index: 1;
+			}
+			
+			#env-selector, #env-selector ul {
+				padding: 0px;
+				margin: 0px;
+			}
+			
+			#env-selector ul li {
+				display: inline;
+				background-color: #000;
+				color: #fff;
+				opacity: 0.6;
+				padding: 5px;
+				font-family: Arial;
+				font-size: medium;
+				cursor: pointer;
+				margin-right: 5px;
+				transition: all 1s;
+			}
+			
+			#env-selector ul li:hover {
+				background-color: #fff;
+				color: #000;
+			}
+			
+			#env-selector ul li.selected {
+				background-color: #3333cc;
+				color: #fff;
+			}
 		</style>        
 	</head>
 	<body>
+			
+		<div id="env-selector">
+			<ul>
+				<li key="night">Night</li>
+				<li key="morning">Morning</li>
+				<li key="day">Day</li>
+				<li key="sunset">Sunset</li>
+			</ul>
+		</div>
 
 		<script src="js/libs/three.min.js"></script>		
 		<script src="js/libs/dat.gui.min.js"></script>
