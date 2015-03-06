@@ -5,7 +5,7 @@
 	ms_Scene : null,
 	ms_Controls : null,
 	ms_Ocean : null,
-	environment : "night",
+	environment : "sunset",
 	
 	ms_Commands : {
 		states : {
@@ -165,6 +165,7 @@
 		} );
 		
 		var demo = this;
+		$( '#env-selector > ul > li[key="' + this.environment + '"]' ).addClass( 'selected' );
 		$( '#env-selector > ul > li' ).click( function() {
 			demo.UpdateEnvironment( $( this ).attr('key') );
 			
@@ -229,22 +230,8 @@
 	},
 
 	LoadSkyBox : function LoadSkyBox() {
-	
-		var textureName = "grimmnight"; // clouds, sky, grimmnight
-		var textureExt = ".jpg";
-	
-		var cubeMap = THREE.ImageUtils.loadTextureCube( [
-			'img/' + textureName + '_west' + textureExt,
-			'img/' + textureName + '_east' + textureExt,
-			'img/' + textureName + '_up' + textureExt,
-			'img/' + textureName + '_down' + textureExt,
-			'img/' + textureName + '_south' + textureExt,
-			'img/' + textureName + '_north' + textureExt
-		] );
-		cubeMap.format = THREE.RGBFormat;
 
 		var cubeShader = THREE.ShaderLib['cube'];
-		cubeShader.uniforms['tCube'].value = cubeMap;
 
 		var skyBoxMaterial = new THREE.ShaderMaterial( {
 			fragmentShader: cubeShader.fragmentShader,
@@ -265,9 +252,6 @@
 	},
 
 	UpdateEnvironment : function UpdateEnvironment( key ) {
-	
-		if( key === this.environment )
-			return ;
 	
 		var textureName = '';
 		var textureExt = ".jpg";
@@ -313,18 +297,8 @@
 			'img/' + textureName + '_north' + textureExt
 		] );
 		cubeMap.format = THREE.RGBFormat;
-
-		var cubeShader = THREE.ShaderLib['cube'];
-		cubeShader.uniforms['tCube'].value = cubeMap;
-
-		var skyBoxMaterial = new THREE.ShaderMaterial( {
-			fragmentShader: cubeShader.fragmentShader,
-			vertexShader: cubeShader.vertexShader,
-			uniforms: cubeShader.uniforms,
-			side: THREE.BackSide
-		} );
 		
-		this.ms_SkyBox.material = skyBoxMaterial;
+		this.ms_SkyBox.material.uniforms['tCube'].value = cubeMap;
 	},
 	
 	Display : function () {
