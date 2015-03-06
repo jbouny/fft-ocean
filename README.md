@@ -7,6 +7,8 @@ This demo shows a way to render realistic scenes in WebGL.
 
 You can travel by using the keyboard and the environment can be selected. You can also explore the working of the scene by typing 'h'.
 
+Live demo: https://jbouny.github.io/fft-ocean/
+
 ### Screenshots
 
 ![Alt text](/visual/night_ocean_fft.jpg "Ocean rendering in a night environment")
