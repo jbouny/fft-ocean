@@ -50,7 +50,7 @@
 		this.ms_Controls.minDistance = 0;
 		this.ms_Controls.maxDistance = 20000.0;
 		this.ms_Controls.minPolarAngle = 0;
-		this.ms_Controls.maxPolarAngle = Math.PI * 0.55;
+		this.ms_Controls.maxPolarAngle = Math.PI * 0.75;
 		
 		this.InitializeScene();
 		
@@ -116,7 +116,7 @@
 		// Initialize Ocean
 		var gsize = 512; 
 		var res = 512; 
-		var gres = 128;
+		var gres = 256;
 		var origx = -gsize / 2;
 		var origz = -gsize / 2;
 		this.ms_Ocean = new THREE.Ocean( this.ms_Renderer, this.ms_Camera, this.ms_Scene,
@@ -143,14 +143,12 @@
 		// Initialize UI
 		var gui = new dat.GUI();
 		dat.GUI.toggleHide();
+		
 		gui.add( this.ms_Ocean, "size", 10, 2000 ).onChange( function( v ) {
 			this.object.size = v;
 			this.object.changed = true;
 		} );
-		gui.add( this.ms_Ocean, "choppiness", 0.1, 4 ).onChange( function ( v ) {
-			this.object.choppiness = v;
-			this.object.changed = true;
-		} );
+		gui.add( this.ms_Ocean.materialSpectrum.uniforms.u_choppiness, "value", 0.1, 4 ).name( "choppiness" );
 		gui.add( this.ms_Ocean, "windX", -50, 50 ).onChange( function ( v ) {
 			this.object.windX = v;
 			this.object.changed = true;
@@ -163,6 +161,7 @@
 			this.object.exposure = v;
 			this.object.changed = true;
 		} );
+		gui.add( DEMO.ms_Ocean.materialOcean, "wireframe" );
 		
 		var demo = this;
 		$( '#env-selector > ul > li[key="' + this.environment + '"]' ).addClass( 'selected' );
@@ -229,7 +228,7 @@
 		
 		// Add a black cylinder to hide the skybox under the water
 		var moutains = new THREE.Mesh(
-			new THREE.CylinderGeometry( 100000, 100000, 100000, 32, 1, true ),
+			new THREE.CylinderGeometry( 90000, 90000, 100000, 32, 1, true ),
 			new THREE.MeshBasicMaterial( { color: "0xffffff", side: THREE.BackSide } )
 		);
 		moutains.position.y = -51000;

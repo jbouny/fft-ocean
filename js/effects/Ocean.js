@@ -140,6 +140,7 @@
 	});
 	this.materialSpectrum.uniforms.u_initialSpectrum = { type: "t", value: null };
 	this.materialSpectrum.uniforms.u_resolution = { type: "f", value: this.resolution };
+	this.materialSpectrum.uniforms.u_choppiness.value = this.choppiness ;
 	this.materialSpectrum.depthTest = false;
 
 	// 6 - Shader used to update spectrum normals
@@ -271,7 +272,7 @@ THREE.Ocean.prototype.renderSpectrum = function () {
 	this.scene.overrideMaterial = this.materialSpectrum;
 	this.materialSpectrum.uniforms.u_initialSpectrum.value = this.initialSpectrumFramebuffer;
 	this.materialSpectrum.uniforms.u_phases.value = this.pingPhase ? this.pingPhaseFramebuffer : this.pongPhaseFramebuffer;
-	this.materialSpectrum.uniforms.u_choppiness.value = this.choppiness ;
+	//this.materialSpectrum.uniforms.u_choppiness.value = this.choppiness ;
 	this.materialSpectrum.uniforms.u_size.value = this.size ;
 	this.renderer.render(this.scene, this.oceanCamera, this.spectrumFramebuffer);
 };
