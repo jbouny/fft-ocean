@@ -6,6 +6,7 @@
 	ms_Controls : null,
 	ms_Ocean : null,
 	environment : "sunset",
+	ms_Raining : false,
 	
 	ms_Commands : {
 		states : {
@@ -264,33 +265,52 @@
 		var textureExt = ".jpg";
 		var directionalLightPosition = null;
 		var directionalLightColor = null;
-		
+		var raining = false;
+		console.log(key);
 		switch( key ) {
 			case 'night':
 				textureName = 'grimmnight'; 
 				directionalLightPosition = new THREE.Vector3( -0.3, 0.3, 1 );
 				directionalLightColor = new THREE.Color( 1, 1, 1 );
-				break;
-			case 'day':
-				textureName = 'sky'; 
-				directionalLightPosition = new THREE.Vector3( -0.5, 0.5, -0.6 );
-				directionalLightColor = new THREE.Color( 1, 0.95, 0.9 );
+				raining = true;
 				break;
 			case 'morning':
 				textureName = 'clouds'; 
 				directionalLightPosition = new THREE.Vector3( -1, 0.5, 0.8 );
 				directionalLightColor = new THREE.Color( 1, 0.95, 0.8 );
 				break;
+			case 'day':
+				textureName = 'sky'; 
+				directionalLightPosition = new THREE.Vector3( -0.5, 0.5, -0.6 );
+				directionalLightColor = new THREE.Color( 1, 0.95, 0.9 );
+				break;
+			case 'cloudy':
+				textureName = 'miramar'; 
+				directionalLightPosition = new THREE.Vector3( 0.3, 1.0, 0.5 );
+				directionalLightColor = new THREE.Color( 0.9, 0.95, 1 );
+				raining = true;
+				break;
 			case 'sunset':
 				textureName = 'sunset'; 
 				directionalLightPosition = new THREE.Vector3( -0.7, 0.2, -1 );
 				directionalLightColor = new THREE.Color( 1, 0.8, 0.5 );
+				break;
+			case 'interstellar':
+				textureName = 'interstellar'; 
+				directionalLightPosition = new THREE.Vector3( -0.7, 1.0, -0.4 );
+				directionalLightColor = new THREE.Color( 0.8, 1.0, 0.95 );
+				break;
+			case 'apocalypse':
+				textureName = 'violent_days'; 
+				directionalLightPosition = new THREE.Vector3( 1, 0.3, 1 );
+				directionalLightColor = new THREE.Color( 1, 0.85, 0.3 );
 				break;
 			default:
 				return;
 		};
 		
 		this.environment = key;
+		this.ms_Raining = raining;
 		this.ms_MainDirectionalLight.position.copy( directionalLightPosition );
 		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
 		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );
@@ -342,26 +362,28 @@
 		}
 		
 		// Update rain
-		var seed = 1;
-		var fastRandom = function fastRandom() {
-			// https://stackoverflow.com/questions/521295/javascript-random-seeds
-			var x = Math.sin( seed++ ) * 10000;
-			return x - Math.floor( x );
+		if( this.ms_Raining ) {
+			var seed = 1;
+			var fastRandom = function fastRandom() {
+				// https://stackoverflow.com/questions/521295/javascript-random-seeds
+				var x = Math.sin( seed++ ) * 10000;
+				return x - Math.floor( x );
+			}
+			for( i in this.ms_RainGeometry.vertices )
+			{
+				var speed = 4.0;
+				this.ms_RainGeometry.vertices[i].y -= fastRandom() * speed + speed;
+				if( this.ms_RainGeometry.vertices[i].y < -50 )
+					this.ms_RainGeometry.vertices[i].y = 50;
+			}
+			this.ms_Rain.rotation.set( -this.ms_Camera.rotation.x, -this.ms_Camera.rotation.y, -this.ms_Camera.rotation.z, "ZYX" );
+			this.ms_RainGeometry.verticesNeedUpdate = true;
 		}
-		for( i in this.ms_RainGeometry.vertices )
-		{
-			var speed = 4.0;
-			this.ms_RainGeometry.vertices[i].y -= fastRandom() * speed + speed;
-			if( this.ms_RainGeometry.vertices[i].y < -50 )
-				this.ms_RainGeometry.vertices[i].y = 50;
-		}
-		this.ms_Rain.rotation.set( -this.ms_Camera.rotation.x, -this.ms_Camera.rotation.y, -this.ms_Camera.rotation.z, "ZYX" );
-		this.ms_RainGeometry.verticesNeedUpdate = true;
 		
 		// Render ocean reflection
 		this.ms_Camera.remove( this.ms_Rain );
 		this.ms_Ocean.render( this.ms_Ocean.deltaTime );
-		if( this.environment === 'night' )
+		if( this.ms_Raining )
 			this.ms_Camera.add( this.ms_Rain );
 		
 		// Updade clouds
