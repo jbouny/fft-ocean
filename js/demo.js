@@ -128,7 +128,7 @@ var DEMO =
 		{
 			INITIAL_SIZE : 200.0,
 			INITIAL_WIND : [ 10.0, 10.0 ],
-			INITIAL_CHOPPINESS : 1.8,
+			INITIAL_CHOPPINESS : 3.6,
 			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
 			SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(),
 			OCEAN_COLOR: new THREE.Vector3( 0.35, 0.4, 0.45 ),
@@ -153,7 +153,7 @@ var DEMO =
 			this.object.size = v;
 			this.object.changed = true;
 		} );
-		gui.add( this.ms_Ocean.materialSpectrum.uniforms.u_choppiness, "value", 0.1, 4 ).name( "choppiness" );
+		gui.add( this.ms_Ocean.materialSpectrum.uniforms.u_choppiness, "value", 0.1, 8 ).name( "choppiness" );
 		gui.add( this.ms_Ocean, "windX", -50, 50 ).onChange( function ( v ) {
 			this.object.windX = v;
 			this.object.changed = true;

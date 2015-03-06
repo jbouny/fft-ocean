@@ -48,7 +48,7 @@ THREE.ShaderLib['ocean_main'] = {
 		THREE.ShaderChunk["screenplane_pars_fragment"],
 
 		'void main (void) {',
-			'vec3 normal = texture2D( u_normalMap, vWorldPosition.xz * 0.003 ).rgb;',
+			'vec3 normal = texture2D( u_normalMap, vWorldPosition.xz * 0.002 ).rgb;',
 			'vec3 view = normalize( vCamPosition - vWorldPosition );',
 			
 			// Compute the specular factor

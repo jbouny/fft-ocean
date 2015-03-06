@@ -352,7 +352,7 @@ THREE.ShaderChunk[ "oceanfft_pars_vertex" ] = [
 
 THREE.ShaderChunk[ "oceanfft_vertex" ] = [
 
-	'vec3 displacement = texture2D( u_displacementMap, worldPosition.xz * 0.003 ).rgb * ( u_geometrySize / u_size );',
+	'vec3 displacement = texture2D( u_displacementMap, worldPosition.xz * 0.002 ).rgb * ( u_geometrySize / u_size );',
 	'vec4 oceanfftWorldPosition = worldPosition + vec4( displacement, 0.0 );',
 	
 ].join('\n');

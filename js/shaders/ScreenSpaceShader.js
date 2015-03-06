@@ -5,7 +5,7 @@
 THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
 		'const float infinite = 150000.0;',
-		'const float screenScale = 1.1;',
+		'const float screenScale = 1.2;',
 		'const vec3 groundNormal = vec3( 0.0, 1.0, 0.0 );',
 		'const float groundHeight = 0.0;',
 		
