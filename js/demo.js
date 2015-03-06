@@ -36,7 +36,7 @@
 		this.ms_Scene.add( this.ms_GroupShip );
 		this.ms_GroupShip.add( this.ms_BlackPearlShip );
 		
-		this.ms_Camera = new THREE.PerspectiveCamera( 55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 300000 );
+		this.ms_Camera = new THREE.PerspectiveCamera( 55.0, WINDOW.ms_Width / WINDOW.ms_Height, 0.5, 200000 );
 		this.ms_Camera.position.set( 0, 350, 800 );
 		this.ms_Camera.lookAt( new THREE.Vector3() );
 		this.ms_BlackPearlShip.add( this.ms_Camera );
@@ -226,6 +226,14 @@
 		// Add twice with different size in order to avoid some artifacts on the reflection
 		addMountain( 70000 );
 		addMountain( 85000 );
+		
+		// Add a black cylinder to hide the skybox under the water
+		var moutains = new THREE.Mesh(
+			new THREE.CylinderGeometry( 90000, 90000, 100000, 32, 1, true ),
+			new THREE.MeshBasicMaterial( { color: "0xffffff", side: THREE.BackSide } )
+		);
+		moutains.position.y = -51000;
+		demo.ms_Scene.add( moutains );
 		
 	},
 
