@@ -1,7 +1,7 @@
 THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		
 		'const float infinite = 100000.0;',
-		'const float screenScale = 1.2;',
+		'const float screenScale = 1.1;',
 		'const vec3 groundNormal = vec3( 0.0, 1.0, 0.0 );',
 		'const float groundHeight = 0.0;',
 		
@@ -36,16 +36,16 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 
 		'vec2 getImagePlan()',
 		'{',
-			// Extracting aspect from projection matrix:
+			// Extracting aspect and focal from projection matrix:
 			// P = | e   0       0   0 |
 			//     | 0   e/(h/w) 0   0 |
 			//     | 0   0       .   . |
 			//     | 0   0       -1  0 |
 		'	float focal = projectionMatrix[0].x;',
-		'	float aspect = projectionMatrix[1].y / focal;',
+		'	float aspect = projectionMatrix[1].y;',
 			
 			// Fix coordinate aspect and scale
-		'	return vec2( ( uv.x - 0.5 ) * aspect * screenScale, ( uv.y - 0.5 ) * screenScale );',
+		'	return vec2( ( uv.x - 0.5 ) * screenScale * aspect, ( uv.y - 0.5 ) * screenScale * focal );',
 		'}',
 		
 		'vec3 getCamRay( in mat3 rotation, in vec2 screenUV )',
