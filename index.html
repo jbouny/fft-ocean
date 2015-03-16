@@ -21,9 +21,16 @@
 				padding: 0px;
 				margin: 0px;
 			}
-			
+      
 			#env-selector ul li {
 				display: inline;
+        padding: 0px;
+        margin:0px;      
+      }
+			
+			#env-selector ul li a {
+				display: inline;
+        text-decoration: none;
 				background-color: #000;
 				color: #fff;
 				opacity: 0.6;
@@ -35,12 +42,12 @@
 				transition: all 1s;
 			}
 			
-			#env-selector ul li:hover {
+			#env-selector ul li a:hover {
 				background-color: #fff;
 				color: #000;
 			}
 			
-			#env-selector ul li.selected {
+			#env-selector ul li.selected a {
 				background-color: #3333cc;
 				color: #fff;
 			}

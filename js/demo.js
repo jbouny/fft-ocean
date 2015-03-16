@@ -9,7 +9,7 @@ var DEMO =
 	ms_Scene : null,
 	ms_Controls : null,
 	ms_Ocean : null,
-	environment : "night",
+	ms_Environment : "night",
 	ms_Raining : false,
 	
 	ms_Commands : {
@@ -169,13 +169,16 @@ var DEMO =
 		gui.add( DEMO.ms_Ocean.materialOcean, "wireframe" );
 		
 		var demo = this;
-		$( '#env-selector > ul > li[key="' + this.environment + '"]' ).addClass( 'selected' );
+    
+		$( '#env-selector > ul > li[key="' + this.ms_Environment + '"]' ).addClass( 'selected' );
 		$( '#env-selector > ul > li' ).click( function() {
 			demo.UpdateEnvironment( $( this ).attr('key') );
 			
 			$( '#env-selector > ul > li' ).removeClass( 'selected' );
 			$( this ).addClass( 'selected' );
-		} ) ;
+		} ).each( function() {
+      $( this ).html( '<a href="#' + $( this ).attr('key') + '">' + $( this ).html() + '</a>' );
+    } ) ;
 					
 	},
 	
@@ -258,8 +261,17 @@ var DEMO =
 		);
 		
 		this.ms_Scene.add( this.ms_SkyBox );
+    
+    // https://stackoverflow.com/questions/3552944/how-to-get-the-anchor-from-the-url-using-jquery
+    var url = window.location.href, idx = url.indexOf("#");
+    var anchor = idx != -1 ? url.substring(idx+1) : null;
+    var environmentParameter = anchor;
+    
+    if( environmentParameter !== null ) {
+      this.ms_Environment = environmentParameter;
+    }
 		
-		this.UpdateEnvironment( this.environment );
+		this.UpdateEnvironment( this.ms_Environment );
 		
 	},
 
@@ -270,7 +282,7 @@ var DEMO =
 		var directionalLightPosition = null;
 		var directionalLightColor = null;
 		var raining = false;
-		console.log(key);
+    
 		switch( key ) {
 			case 'night':
 				textureName = 'grimmnight'; 
@@ -313,7 +325,7 @@ var DEMO =
 				return;
 		};
 		
-		this.environment = key;
+		this.ms_Environment = key;
 		this.ms_Raining = raining;
 		this.ms_MainDirectionalLight.position.copy( directionalLightPosition );
 		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
