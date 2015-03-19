@@ -91,13 +91,16 @@ var DEMO =
 			var size = 128;
 			var rainTexture = THREE.ImageUtils.loadTexture( "img/water-drop.png" );
 
+      var rainShader = THREE.ShaderLib['rain'];
+
 			var rainMaterial = new THREE.ShaderMaterial({
-				uniforms: { texture: { type: 't', value: rainTexture } }, 
-				vertexShader: document.getElementById('vertexShader').textContent,
-				fragmentShader: document.getElementById('fragmentShader').textContent,
+        fragmentShader: rainShader.fragmentShader,
+        vertexShader: rainShader.vertexShader,
+        uniforms: rainShader.uniforms,
 				transparent: true,
 				depthWrite: false
 			});
+      rainMaterial.uniforms.texture.value = rainTexture;
 			
 			this.ms_RainGeometry = new THREE.Geometry();
 			for ( i = 0; i < 100; i++ )
