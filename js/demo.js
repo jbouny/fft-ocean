@@ -90,6 +90,9 @@ var DEMO =
 		{
 			var size = 128;
 			var rainTexture = THREE.ImageUtils.loadTexture( "img/water-drop.png" );
+      rainTexture.generateMipmaps = false;
+      rainTexture.magFilter = THREE.LinearFilter;
+      rainTexture.minFilter = THREE.LinearFilter;
 
       var rainShader = THREE.ShaderLib['rain'];
 
@@ -214,9 +217,14 @@ var DEMO =
 	LoadMountains : function LoadSkyBox() {
 	
 		var demo = this;
+    
+    var texture = THREE.ImageUtils.loadTexture('img/mountains.png');
+    texture.generateMipmaps = false;
+    texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.LinearFilter;
 		
 		var mountainsMaterial = new THREE.MeshBasicMaterial( { 
-			map: THREE.ImageUtils.loadTexture('img/mountains.png'), 
+			map: texture, 
 			transparent: true,
 			side: THREE.BackSide,
 			depthWrite: false
@@ -343,6 +351,9 @@ var DEMO =
 			'img/' + textureName + '_north' + textureExt
 		] );
 		cubeMap.format = THREE.RGBFormat;
+    cubeMap.generateMipmaps = false;
+    cubeMap.magFilter = THREE.LinearFilter;
+    cubeMap.minFilter = THREE.LinearFilter;
 		
 		this.ms_SkyBox.material.uniforms['tCube'].value = cubeMap;
 	},
