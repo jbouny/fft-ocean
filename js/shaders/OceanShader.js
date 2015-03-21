@@ -5,6 +5,7 @@
  
 THREE.ShaderLib['ocean_main'] = {
 	uniforms: THREE.UniformsLib[ "oceanfft" ],
+  
 	vertexShader: [
 		'precision highp float;',
 		
@@ -29,9 +30,29 @@ THREE.ShaderLib['ocean_main'] = {
 			'gl_Position = projectionMatrix * viewMatrix * oceanfftWorldPosition;',
 		'}'
 	].join('\n'),
-	fragmentShader: [
+  
+	vertexShaderNoTexLookup: [
 		'precision highp float;',
+		
+		'varying vec3 vWorldPosition;',
+		'varying vec4 vReflectCoordinates;',
 
+		'uniform mat4 u_mirrorMatrix;',
+		
+		THREE.ShaderChunk[ "screenplane_pars_vertex" ],
+		THREE.ShaderChunk[ "oceanfft_pars_vertex" ],
+
+		'void main (void) {',
+			THREE.ShaderChunk[ "screenplane_vertex" ],
+			
+			'vWorldPosition = screenPlaneWorldPosition.xyz;',
+			'vReflectCoordinates = u_mirrorMatrix * screenPlaneWorldPosition;',
+			
+			'gl_Position = projectionMatrix * viewMatrix * screenPlaneWorldPosition;',
+		'}'
+	].join('\n'),
+  
+	fragmentShader: [
 		'varying vec3 vWorldPosition;',
 		'varying vec4 vReflectCoordinates;',
 
@@ -64,7 +85,7 @@ THREE.ShaderLib['ocean_main'] = {
 			'distanceRatio *= distanceRatio;',
 			'distanceRatio = distanceRatio * 0.7 + 0.3;',
 			//'distanceRatio = 1.0;',
-			'normal = ( distanceRatio * normal + vec3( 0.0, 1.0 - distanceRatio, 0.0 ) ) / 2.0;',
+			'normal = ( distanceRatio * normal + vec3( 0.0, 1.0 - distanceRatio, 0.0 ) ) * 0.5;',
 			'normal /= length( normal );',
 			
 			// Compute the fresnel ratio

@@ -166,10 +166,17 @@ THREE.Ocean = function (renderer, camera, scene, options) {
 	var oceanShader = THREE.ShaderLib["ocean_main"];
 	var oceanUniforms = THREE.UniformsUtils.clone(oceanShader.uniforms);
 	var oceanAttributes = THREE.UniformsUtils.clone(oceanShader.attributes);
+  var vertexShaderOcean = oceanShader.vertexShader;
+  {
+    var gl = renderer.getContext();
+    if ( gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS) === 0 ) {
+      vertexShaderOcean = oceanShader.vertexShaderNoTexLookup;
+    }
+  }
 	this.materialOcean = new THREE.ShaderMaterial({
 		attributes: oceanAttributes,
 		uniforms: oceanUniforms,
-		vertexShader: oceanShader.vertexShader,
+		vertexShader: vertexShaderOcean,
 		fragmentShader: oceanShader.fragmentShader,
 		side: THREE.FrontSide,
 		wireframe: false

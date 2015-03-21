@@ -57,7 +57,6 @@ THREE.ShaderLib['ocean_subtransform'] = {
 	},
 	fragmentShader: [
 		//GPU FFT using a Stockham formulation
-		'precision highp float;',
 
 		'const float PI = 3.14159265359;',
 
@@ -106,7 +105,6 @@ THREE.ShaderLib['ocean_initial_spectrum'] = {
 		"u_size": { type: "f", value: 250.0 },
 	},
 	fragmentShader: [
-		'precision highp float;',
 
 		'const float PI = 3.14159265359;',
 		'const float G = 9.81;',
@@ -190,7 +188,6 @@ THREE.ShaderLib['ocean_phase'] = {
 		"vUV": { type: "v2" }
 	},
 	fragmentShader: [
-		'precision highp float;',
 
 		'const float PI = 3.14159265359;',
 		'const float G = 9.81;',
@@ -233,7 +230,6 @@ THREE.ShaderLib['ocean_spectrum'] = {
 		"vUV": { type: "v2" }
 	},
 	fragmentShader: [
-		'precision highp float;',
 
 		'const float PI = 3.14159265359;',
 		'const float G = 9.81;',
@@ -298,7 +294,6 @@ THREE.ShaderLib['ocean_normals'] = {
 		"vUV": { type: "v2" }
 	},
 	fragmentShader: [
-		'precision highp float;',
 
 		'varying vec2 vUV;',
 		
@@ -358,7 +353,7 @@ THREE.ShaderChunk[ "oceanfft_vertex" ] = [
 ].join('\n');
 
 THREE.ShaderChunk[ "oceanfft_pars_fragment" ] = [
-	
+  
 ].join('\n');
 
 THREE.ShaderChunk[ "oceanfft_fragment" ] = [
