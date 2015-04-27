@@ -16,22 +16,22 @@
 
 @media (min-width: 768px) {
   .messg {
-    left: 23%;
-    right: 23%;
+    width: 54%;
+    left: auto
   }
 }
 
 @media (min-width: 992px) {
   .messg {
-    left: 28%;
-    right: 28%;
+    width: 44%;
+    left: auto
   }
 }
 
 @media (min-width: 1200px) {
   .messg {
-    left: 33%;
-    right: 33%;
+    width: 34%;
+    left: auto
   }
 }
 
@@ -41,27 +41,23 @@
 }
 
 .messg-success {
-  background-color: #5cb85c;
-  border-bottom: 1px solid #4cae4c;
+  background-color: rgba( 92, 150, 92, 0.4 );
 }
 
 .messg-info {
-  background-color: #31b0d5;
-  border-bottom: 1px solid #269abc;
+  background-color: rgba( 49, 176, 213, 0.4 );
 }
 
 .messg-warning {
-  background-color: #ec971f;
-  border-bottom: 1px solid #d58512;
+  background-color: rgba( 236, 151, 31, 0.4 );
 }
 
 .messg-error {
-  background-color: #c9302c;
-  border-bottom: 1px solid #ac2925;
+  background-color: rgba( 201, 48, 44, 0.4 );
 }
 
 .messg-text {
-  padding: 10px 15px;
+  padding: 5px 10px;
 }
 
 .messg-buttons {
