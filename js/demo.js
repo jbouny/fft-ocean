@@ -69,14 +69,20 @@ var DEMO =
   
     this.ms_Loader = new THREE.LoadingManager();
     
+    var log = function( message, type, timeout ) {
+      console.log( message );
+      messg( message, type, timeout );
+    }
+    
+    var delay = 1500;
     this.ms_Loader.onProgress = function( item, loaded, total ) {
-        console.log( 'Loaded ', loaded, '/', total, ':', item );
+      log( 'Loaded ' + loaded + '/' + total + ':' + item, 'info', delay );
     };
     this.ms_Loader.onLoad = function () {
-        console.log( 'Loaded.' );
+      log( 'Loaded.', 'success', delay );
     };
     this.ms_Loader.onError = function () {
-        console.log( 'Loading error.' );
+      log( 'Loading error.', 'error', delay );
     };
     
     
