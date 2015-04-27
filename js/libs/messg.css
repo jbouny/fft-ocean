@@ -1,0 +1,130 @@
+
+.messg {
+  cursor: pointer;
+  font-size: 14px;
+  left: 10px;
+  position: fixed;
+  right: 10px;
+  text-align: left;
+  z-index: 9999;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
+       -o-border-radius: 4px;
+          border-radius: 4px;
+}
+
+@media (min-width: 768px) {
+  .messg {
+    left: 23%;
+    right: 23%;
+  }
+}
+
+@media (min-width: 992px) {
+  .messg {
+    left: 28%;
+    right: 28%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .messg {
+    left: 33%;
+    right: 33%;
+  }
+}
+
+.messg-default {
+  background-color: #333;
+  border-bottom: 1px solid #000;
+}
+
+.messg-success {
+  background-color: #5cb85c;
+  border-bottom: 1px solid #4cae4c;
+}
+
+.messg-info {
+  background-color: #31b0d5;
+  border-bottom: 1px solid #269abc;
+}
+
+.messg-warning {
+  background-color: #ec971f;
+  border-bottom: 1px solid #d58512;
+}
+
+.messg-error {
+  background-color: #c9302c;
+  border-bottom: 1px solid #ac2925;
+}
+
+.messg-text {
+  padding: 10px 15px;
+}
+
+.messg-buttons {
+  float: right;
+  padding: 10px;
+}
+
+.messg,
+.messg button {
+  color: #fff;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.messg button {
+  background: none;
+  border: 0 none;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 0 0 5px;
+  padding: 0 6px;
+  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+      -ms-border-radius: 2px;
+       -o-border-radius: 2px;
+          border-radius: 2px;
+}
+
+.messg-default button {
+  background-color: #1a1a1a;
+}
+
+.messg-default button:hover {
+  background-color: #000;
+}
+
+.messg-success button {
+  background-color: #54b354;
+}
+
+.messg-success button:hover {
+  background-color: #4cae4c;
+}
+
+.messg-info button {
+  background-color: #2ca5c9;
+}
+
+.messg-info button:hover {
+  background-color: #269abc;
+}
+
+.messg-warning button {
+  background-color: #e18e19;
+}
+
+.messg-warning button:hover {
+  background-color: #d58512;
+}
+
+.messg-error button {
+  background-color: #bb2d29;
+}
+
+.messg-error button:hover {
+  background-color: #ac2925;
+}
