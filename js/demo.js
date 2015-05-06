@@ -469,7 +469,7 @@ var DEMO =
 
 		// Render ocean reflection
 		this.ms_Camera.remove( this.ms_Rain );
-		this.ms_Ocean.render( this.ms_Ocean.deltaTime );
+		this.ms_Ocean.render();
 		if( this.ms_Raining )
 			this.ms_Camera.add( this.ms_Rain );
 
@@ -477,15 +477,8 @@ var DEMO =
 		this.ms_CloudShader.update();
 
 		// Update ocean data
-		this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
-		if ( this.ms_Ocean.changed ) {
-			this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
-			this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
-			this.ms_Ocean.changed = false;
-		}
-		this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer ;
-		this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer ;
-		this.ms_Ocean.materialOcean.depthTest = true;
+		this.ms_Ocean.update();
+    
 		this.ms_Controls.update();
 		this.Display();
 

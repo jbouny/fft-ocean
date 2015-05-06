@@ -6,6 +6,7 @@
  */
 
 THREE.Ocean = function (renderer, camera, scene, options) {
+
 	// flag used to trigger parameter changes
 	this.changed = true;
 	this.initial = true;
@@ -212,19 +213,32 @@ THREE.Ocean = function (renderer, camera, scene, options) {
 	this.generateMesh();
 	this.mirror.mesh = this.oceanMesh;
 	camera.add( this.oceanMesh );
+  
 };
 
 THREE.Ocean.prototype.generateMesh = function () {
 
-	//var geometry = new THREE.PlaneBufferGeometry( this.geometrySize, this.geometrySize, this.geometryResolution, this.geometryResolution );
 	var geometry = new THREE.PlaneBufferGeometry( 1, 1, this.geometryResolution, this.geometryResolution );
-
-	//geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-
 	this.oceanMesh = new THREE.Mesh( geometry, this.materialOcean );
+  
+};
+
+THREE.Ocean.prototype.update = function () {
+
+  this.overrideMaterial = this.materialOcean;
+  if ( this.changed ) {
+    this.materialOcean.uniforms.u_size.value = this.size;
+    this.materialOcean.uniforms.u_exposure.value = this.exposure;
+    this.changed = false;
+  }
+  this.materialOcean.uniforms.u_normalMap.value = this.normalMapFramebuffer ;
+  this.materialOcean.uniforms.u_displacementMap.value = this.displacementMapFramebuffer ;
+  this.materialOcean.depthTest = true;
+  
 };
 
 THREE.Ocean.prototype.render = function () {
+
 	this.scene.overrideMaterial = null;
 	
 	if (this.changed)
@@ -236,9 +250,11 @@ THREE.Ocean.prototype.render = function () {
 	this.renderSpectrumFFT();
 	this.renderNormalMap();
 	this.scene.overrideMaterial = null;
+  
 };
 
 THREE.Ocean.prototype.generateSeedPhaseTexture = function() {
+
 	// Setup the seed texture
 	this.pingPhase = true;
 	var phaseArray = new window.Float32Array(this.resolution * this.resolution * 4);
@@ -258,16 +274,20 @@ THREE.Ocean.prototype.generateSeedPhaseTexture = function() {
 	this.pingPhaseTexture.wrapT = THREE.ClampToEdgeWrapping;
 	this.pingPhaseTexture.type = THREE.FloatType;
 	this.pingPhaseTexture.needsUpdate = true;
+  
 };
 
 THREE.Ocean.prototype.renderInitialSpectrum = function () {
+
 	this.scene.overrideMaterial = this.materialInitialSpectrum;
 	this.materialInitialSpectrum.uniforms.u_wind.value.set( this.windX, this.windY );
 	this.materialInitialSpectrum.uniforms.u_size.value = this.size;
 	this.renderer.render(this.scene, this.oceanCamera, this.initialSpectrumFramebuffer, true);
+  
 };
 
 THREE.Ocean.prototype.renderWavePhase = function () {
+
 	this.scene.overrideMaterial = this.materialPhase;
 	this.screenQuad.material = this.materialPhase;
 	if (this.initial) {
@@ -280,18 +300,22 @@ THREE.Ocean.prototype.renderWavePhase = function () {
 	this.materialPhase.uniforms.u_size.value = this.size;
 	this.renderer.render(this.scene, this.oceanCamera, this.pingPhase ? this.pongPhaseFramebuffer : this.pingPhaseFramebuffer);
 	this.pingPhase = !this.pingPhase;
+  
 };
 
 THREE.Ocean.prototype.renderSpectrum = function () {
+
 	this.scene.overrideMaterial = this.materialSpectrum;
 	this.materialSpectrum.uniforms.u_initialSpectrum.value = this.initialSpectrumFramebuffer;
 	this.materialSpectrum.uniforms.u_phases.value = this.pingPhase ? this.pingPhaseFramebuffer : this.pongPhaseFramebuffer;
 	//this.materialSpectrum.uniforms.u_choppiness.value = this.choppiness ;
 	this.materialSpectrum.uniforms.u_size.value = this.size ;
 	this.renderer.render(this.scene, this.oceanCamera, this.spectrumFramebuffer);
+  
 };
 
 THREE.Ocean.prototype.renderSpectrumFFT = function() {
+
 	// GPU FFT using Stockham formulation
 	var iterations = Math.log2( this.resolution ) * 2; // log2
 	
@@ -339,11 +363,14 @@ THREE.Ocean.prototype.renderSpectrumFFT = function() {
 		subtransformProgram.uniforms.u_subtransformSize.value = Math.pow(2, (i % (iterations / 2) + 1 ));
 		this.renderer.render(this.scene, this.oceanCamera, frameBuffer);
 	}
+  
 };
 
 THREE.Ocean.prototype.renderNormalMap = function () {
+
 	this.scene.overrideMaterial = this.materialNormal;
 	if (this.changed) this.materialNormal.uniforms.u_size.value = this.size;
 	this.materialNormal.uniforms.u_displacementMap.value = this.displacementMapFramebuffer;
 	this.renderer.render(this.scene, this.oceanCamera, this.normalMapFramebuffer, true);
+  
 };
