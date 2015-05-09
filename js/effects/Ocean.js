@@ -337,21 +337,23 @@ THREE.Ocean.prototype.renderSpectrumFFT = function() {
 	// N-1 : materialOceanVertical( pingTransformFramebuffer / pongTransformFramebuffer ) > displacementMapFramebuffer
 	
 	var frameBuffer;
+	var inputBuffer;
+  
 	for (var i = 0; i < iterations; i++) {
 		if (i === 0) {
-			subtransformProgram.uniforms.u_input.value = this.spectrumFramebuffer;
+      inputBuffer = this.spectrumFramebuffer;
 			frameBuffer = this.pingTransformFramebuffer ;
 		} 
 		else if (i === iterations - 1) {
-			subtransformProgram.uniforms.u_input.value = ((iterations % 2 === 0)? this.pingTransformFramebuffer : this.pongTransformFramebuffer) ;
+      inputBuffer = ((iterations % 2 === 0)? this.pingTransformFramebuffer : this.pongTransformFramebuffer) ;
 			frameBuffer = this.displacementMapFramebuffer ;
 		}
 		else if (i % 2 === 1) {
-			subtransformProgram.uniforms.u_input.value = this.pingTransformFramebuffer;
+      inputBuffer = this.pingTransformFramebuffer;
 			frameBuffer = this.pongTransformFramebuffer ;
 		}
 		else {
-			subtransformProgram.uniforms.u_input.value = this.pongTransformFramebuffer;
+      inputBuffer = this.pongTransformFramebuffer;
 			frameBuffer = this.pingTransformFramebuffer ;
 		}
 		
@@ -359,7 +361,9 @@ THREE.Ocean.prototype.renderSpectrumFFT = function() {
 			subtransformProgram = this.materialOceanVertical;
 			this.scene.overrideMaterial = this.materialOceanVertical;
 		}
-			
+    
+		subtransformProgram.uniforms.u_input.value = inputBuffer;
+    
 		subtransformProgram.uniforms.u_subtransformSize.value = Math.pow(2, (i % (iterations / 2) + 1 ));
 		this.renderer.render(this.scene, this.oceanCamera, frameBuffer);
 	}
