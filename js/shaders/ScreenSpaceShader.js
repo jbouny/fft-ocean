@@ -14,11 +14,12 @@ THREE.ShaderChunk["screenplane_pars_vertex"] = [
 		'vec3 interceptPlane( in vec3 source, in vec3 dir, in vec3 normal, float height )',
 		'{',
 			// Compute the distance between the source and the surface, following a ray, then return the intersection
-		'	float distance = ( height - dot( normal, source ) ) / dot( dir, normal );',
+      // http://www.cs.rpi.edu/~cutler/classes/advancedgraphics/S09/lectures/11_ray_tracing.pdf
+		'	float distance = ( - height - dot( normal, source ) ) / dot( normal, dir );',
 		'	if( distance < 0.0 )',
 		'		return source + dir * distance;',
 		'	else ',
-		'		return vec3( source.x, 0.0, source.z ) - vec3( dir.x, 0.0, dir.z ) * infinite;',
+		'		return - ( vec3( source.x, height, source.z ) + vec3( dir.x, height, dir.z ) * infinite );',
 		'}',
 		
 		'mat3 getRotation()',
