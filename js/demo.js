@@ -57,6 +57,7 @@ var DEMO =
 		this.ms_Controls.minPolarAngle = 0;
 		this.ms_Controls.maxPolarAngle = Math.PI * 0.75;
 
+    this.InitializeSound();
 		this.InitializeLoader();
 		this.InitializeScene();
 
@@ -64,6 +65,38 @@ var DEMO =
 		this.InitCommands();
 
 	},
+  
+  InitializeSound : function InitializeSound() {
+    
+    var initSound = function initSound( url ) {
+    
+      if ( window.HTMLAudioElement ) {
+      
+        var sound = new Audio('');
+
+        if ( sound.canPlayType( 'audio/mp3' ) ) {
+        
+          var sound = new Audio( url );
+          
+          sound.addEventListener( 'ended', function() {
+            this.currentTime = 0;
+            this.play();
+          }, false );
+          
+          return sound;
+          
+        }
+        
+      }
+      
+    };
+    
+    this.ms_soundWaves = initSound( 'sound/waves.mp3' );
+    this.ms_soundRain = initSound( 'sound/rain.mp3' );
+    
+    this.ms_soundWaves.play();
+    
+  },
   
   InitializeLoader : function InitializeLoader() {
   
@@ -376,6 +409,12 @@ var DEMO =
 		this.ms_MainDirectionalLight.position.copy( directionalLightPosition );
 		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
 		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );
+    if ( raining ) {
+      this.ms_soundRain.play();
+    }
+    else {
+      this.ms_soundRain.pause();
+    }
     
     var sources = [
 			'img/' + textureName + '_west' + textureExt,
@@ -507,6 +546,10 @@ var DEMO =
 		else if( states.right ) {
 			targetAngle = -Math.PI * 0.005;
 		}
+    if( states.down ) {
+      targetAngle *= -1.0;
+    }
+    
 		var curAngle = this.ms_Commands.movements.angle ;
 		this.ms_Commands.movements.angle = curAngle + ( targetAngle - curAngle ) * 0.02;
 
