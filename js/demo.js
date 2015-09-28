@@ -57,7 +57,7 @@ var DEMO =
 		this.ms_Controls.minPolarAngle = 0;
 		this.ms_Controls.maxPolarAngle = Math.PI * 0.75;
 
-    this.InitializeSound();
+		this.InitializeSound();
 		this.InitializeLoader();
 		this.InitializeScene();
 
@@ -65,63 +65,63 @@ var DEMO =
 		this.InitCommands();
 
 	},
-  
-  InitializeSound : function InitializeSound() {
-    
-    var initSound = function initSound( url ) {
-    
-      if ( window.HTMLAudioElement ) {
-      
-        var sound = new Audio('');
+	
+	InitializeSound : function InitializeSound() {
+		
+		var initSound = function initSound( url ) {
+		
+			if ( window.HTMLAudioElement ) {
+			
+				var sound = new Audio('');
 
-        if ( sound.canPlayType( 'audio/mp3' ) ) {
-        
-          var sound = new Audio( url );
-          
-          sound.addEventListener( 'ended', function() {
-            this.currentTime = 0;
-            this.play();
-          }, false );
-          
-          return sound;
-          
-        }
-        
-      }
-      
-    };
-    
-    this.ms_soundWaves = initSound( 'sound/waves.mp3' );
-    this.ms_soundRain = initSound( 'sound/rain.mp3' );
-    
-    this.ms_soundWaves.play();
-    
-  },
-  
-  InitializeLoader : function InitializeLoader() {
-  
-    this.ms_Loader = new THREE.LoadingManager();
-    
-    var log = function( message, type, timeout ) {
-      console.log( message );
-      messg( message, type, timeout );
-    }
-    
-    var delay = 1500;
-    this.ms_Loader.onProgress = function( item, loaded, total ) {
-      log( 'Loaded ' + loaded + '/' + total + ':' + item, 'info', delay );
-    };
-    this.ms_Loader.onLoad = function () {
-      log( 'Loaded.', 'success', delay );
-    };
-    this.ms_Loader.onError = function () {
-      log( 'Loading error.', 'error', delay );
-    };
-    
-    
-    this.ms_ImageLoader = new THREE.ImageLoader( this.ms_Loader );
-  
-  },
+				if ( sound.canPlayType( 'audio/mp3' ) ) {
+				
+					var sound = new Audio( url );
+					
+					sound.addEventListener( 'ended', function() {
+						this.currentTime = 0;
+						this.play();
+					}, false );
+					
+					return sound;
+					
+				}
+				
+			}
+			
+		};
+		
+		this.ms_soundWaves = initSound( 'sound/waves.mp3' );
+		this.ms_soundRain = initSound( 'sound/rain.mp3' );
+		
+		this.ms_soundWaves.play();
+		
+	},
+	
+	InitializeLoader : function InitializeLoader() {
+	
+		this.ms_Loader = new THREE.LoadingManager();
+		
+		var log = function( message, type, timeout ) {
+			console.log( message );
+			messg( message, type, timeout );
+		}
+		
+		var delay = 1500;
+		this.ms_Loader.onProgress = function( item, loaded, total ) {
+			log( 'Loaded ' + loaded + '/' + total + ':' + item, 'info', delay );
+		};
+		this.ms_Loader.onLoad = function () {
+			log( 'Loaded.', 'success', delay );
+		};
+		this.ms_Loader.onError = function () {
+			log( 'Loading error.', 'error', delay );
+		};
+		
+		
+		this.ms_ImageLoader = new THREE.ImageLoader( this.ms_Loader );
+	
+	},
 
 	InitializeScene : function InitializeScene() {
 
@@ -148,25 +148,25 @@ var DEMO =
 		// Add rain
 		{
 			var size = 128;
-      var rainTexture = new THREE.Texture();
-      rainTexture.generateMipmaps = false;
-      rainTexture.magFilter = THREE.LinearFilter;
-      rainTexture.minFilter = THREE.LinearFilter;
-      this.ms_ImageLoader.load( 'img/water-drop.png', function ( image ) {
-          rainTexture.image = image;
-          rainTexture.needsUpdate = true;
-      } );
+			var rainTexture = new THREE.Texture();
+			rainTexture.generateMipmaps = false;
+			rainTexture.magFilter = THREE.LinearFilter;
+			rainTexture.minFilter = THREE.LinearFilter;
+			this.ms_ImageLoader.load( 'img/water-drop.png', function ( image ) {
+					rainTexture.image = image;
+					rainTexture.needsUpdate = true;
+			} );
 
-      var rainShader = THREE.ShaderLib['rain'];
+			var rainShader = THREE.ShaderLib['rain'];
 
 			var rainMaterial = new THREE.ShaderMaterial({
-        fragmentShader: rainShader.fragmentShader,
-        vertexShader: rainShader.vertexShader,
-        uniforms: rainShader.uniforms,
+				fragmentShader: rainShader.fragmentShader,
+				vertexShader: rainShader.vertexShader,
+				uniforms: rainShader.uniforms,
 				transparent: true,
 				depthWrite: false
 			});
-      rainMaterial.uniforms.texture.value = rainTexture;
+			rainMaterial.uniforms.texture.value = rainTexture;
 
 			this.ms_RainGeometry = new THREE.Geometry();
 			for ( i = 0; i < 100; i++ )
@@ -177,13 +177,13 @@ var DEMO =
 				vertex.z = Math.random() * size - size * 0.5;
 				this.ms_RainGeometry.vertices.push( vertex );
 			}
-			this.ms_Rain = new THREE.PointCloud( this.ms_RainGeometry, rainMaterial );
+			this.ms_Rain = new THREE.Points( this.ms_RainGeometry, rainMaterial );
 			this.ms_Camera.add( this.ms_Rain );
 			this.ms_Rain.position.setZ( - size * 0.75 ) ;
 		}
 
 		// Initialize Clouds
-		this.ms_CloudShader = new CloudShader( this.ms_Renderer );
+		this.ms_CloudShader = new CloudShader( this.ms_Renderer, 512 );
 		this.ms_CloudShader.cloudMesh.scale.multiplyScalar( 4.0 );
 		this.ms_Scene.add( this.ms_CloudShader.cloudMesh );
 
@@ -246,8 +246,8 @@ var DEMO =
 			$( '#env-selector > ul > li' ).removeClass( 'selected' );
 			$( this ).addClass( 'selected' );
 		} ).each( function() {
-      $( this ).html( '<a href="#' + $( this ).attr('key') + '">' + $( this ).html() + '</a>' );
-    } ) ;
+			$( this ).html( '<a href="#' + $( this ).attr('key') + '">' + $( this ).html() + '</a>' );
+		} ) ;
 
 	},
 
@@ -281,14 +281,14 @@ var DEMO =
 
 		var demo = this;
 
-    var mountainTexture = new THREE.Texture();
-    mountainTexture.generateMipmaps = false;
-    mountainTexture.magFilter = THREE.LinearFilter;
-    mountainTexture.minFilter = THREE.LinearFilter;
-    this.ms_ImageLoader.load( 'img/mountains.png', function ( image ) {
-        mountainTexture.image = image;
-        mountainTexture.needsUpdate = true;
-    } );
+		var mountainTexture = new THREE.Texture();
+		mountainTexture.generateMipmaps = false;
+		mountainTexture.magFilter = THREE.LinearFilter;
+		mountainTexture.minFilter = THREE.LinearFilter;
+		this.ms_ImageLoader.load( 'img/mountains.png', function ( image ) {
+				mountainTexture.image = image;
+				mountainTexture.needsUpdate = true;
+		} );
 
 
 		var mountainsMaterial = new THREE.MeshBasicMaterial( {
@@ -316,7 +316,7 @@ var DEMO =
 		// Add a black cylinder to hide the skybox under the water
 		var cylinder = new THREE.Mesh(
 			new THREE.CylinderGeometry( 150000, 150000, 150000, 32, 1, true ),
-			new THREE.MeshBasicMaterial( { color: "0xffffff", side: THREE.BackSide } )
+			new THREE.MeshBasicMaterial( { color: new THREE.Color( 1, 1, 1 ), side: THREE.BackSide } )
 		);
 		cylinder.position.y = -80000;
 		demo.ms_Scene.add( cylinder );
@@ -341,14 +341,14 @@ var DEMO =
 
 		this.ms_Scene.add( this.ms_SkyBox );
 
-    // https://stackoverflow.com/questions/3552944/how-to-get-the-anchor-from-the-url-using-jquery
-    var url = window.location.href, idx = url.indexOf("#");
-    var anchor = idx != -1 ? url.substring(idx+1) : null;
-    var environmentParameter = anchor;
+		// https://stackoverflow.com/questions/3552944/how-to-get-the-anchor-from-the-url-using-jquery
+		var url = window.location.href, idx = url.indexOf("#");
+		var anchor = idx != -1 ? url.substring(idx+1) : null;
+		var environmentParameter = anchor;
 
-    if( environmentParameter !== null ) {
-      this.ms_Environment = environmentParameter;
-    }
+		if( environmentParameter !== null ) {
+			this.ms_Environment = environmentParameter;
+		}
 
 		this.UpdateEnvironment( this.ms_Environment );
 
@@ -409,14 +409,14 @@ var DEMO =
 		this.ms_MainDirectionalLight.position.copy( directionalLightPosition );
 		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
 		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );
-    if ( raining ) {
-      this.ms_soundRain.play();
-    }
-    else {
-      this.ms_soundRain.pause();
-    }
-    
-    var sources = [
+		if ( raining ) {
+			this.ms_soundRain.play();
+		}
+		else {
+			this.ms_soundRain.pause();
+		}
+		
+		var sources = [
 			'img/' + textureName + '_west' + textureExt,
 			'img/' + textureName + '_east' + textureExt,
 			'img/' + textureName + '_up' + textureExt,
@@ -424,32 +424,32 @@ var DEMO =
 			'img/' + textureName + '_south' + textureExt,
 			'img/' + textureName + '_north' + textureExt
 		];
-    var images = [];
+		var images = [];
 
-    var cubeMap = new THREE.CubeTexture( images );
-    cubeMap.flipY = false;
+		var cubeMap = new THREE.CubeTexture( images );
+		cubeMap.flipY = false;
 
-    var imageLoader = this.ms_ImageLoader;
-    var loaded = 0;
-    var loadTexture = function ( i ) {
-      imageLoader.load( sources[ i ], function ( image ) {
-        cubeMap.images[ i ] = image;
-        loaded ++;
-        if ( loaded === 6 ) {
-          cubeMap.needsUpdate = true;
-        }
-      } );
+		var imageLoader = this.ms_ImageLoader;
+		var loaded = 0;
+		var loadTexture = function ( i ) {
+			imageLoader.load( sources[ i ], function ( image ) {
+				cubeMap.images[ i ] = image;
+				loaded ++;
+				if ( loaded === 6 ) {
+					cubeMap.needsUpdate = true;
+				}
+			} );
 
-    }
+		}
 
-    for ( var i = 0, il = sources.length; i < il; ++ i ) {
-      loadTexture( i );
-    }
-    
+		for ( var i = 0, il = sources.length; i < il; ++ i ) {
+			loadTexture( i );
+		}
+		
 		cubeMap.format = THREE.RGBFormat;
-    cubeMap.generateMipmaps = false;
-    cubeMap.magFilter = THREE.LinearFilter;
-    cubeMap.minFilter = THREE.LinearFilter;
+		cubeMap.generateMipmaps = false;
+		cubeMap.magFilter = THREE.LinearFilter;
+		cubeMap.minFilter = THREE.LinearFilter;
 
 		this.ms_SkyBox.material.uniforms['tCube'].value = cubeMap;
 	},
@@ -517,7 +517,7 @@ var DEMO =
 
 		// Update ocean data
 		this.ms_Ocean.update();
-    
+		
 		this.ms_Controls.update();
 		this.Display();
 
@@ -546,10 +546,10 @@ var DEMO =
 		else if( states.right ) {
 			targetAngle = -Math.PI * 0.005;
 		}
-    if( states.down ) {
-      targetAngle *= -1.0;
-    }
-    
+		if( states.down ) {
+			targetAngle *= -1.0;
+		}
+		
 		var curAngle = this.ms_Commands.movements.angle ;
 		this.ms_Commands.movements.angle = curAngle + ( targetAngle - curAngle ) * 0.02;
 
