@@ -8,7 +8,6 @@
 THREE.ShaderLib['cloud'] = {
 	uniforms: {
 		'texture': { type: 't', value: null},
-		'resolution': { type: 'v2', value: null },
 		'time': { type: 'f', value: 1 },
 		'sharp': { type: 'f', value: 0.9 },
 		'cover': { type: 'f', value: 0.5 },
@@ -43,7 +42,6 @@ THREE.ShaderLib['cloud'] = {
 							// substraction factor
 		'uniform float clouds;', // opacity
 		'uniform sampler2D texture;',
-		'uniform vec2 resolution;',
 		'varying vec2 vUv;',
 
 		// multi-chanel noise lookup
@@ -61,30 +59,16 @@ THREE.ShaderLib['cloud'] = {
 		'	return f;',
 		'}',
 
-		'float noise(vec2 p) {',
-		'	return texture2D(texture,p).x;', 
-		'}',
-
-		'float fnoise(vec2 uv) {',
-		'	float f = 0.;',
-		'	float scale = 1.;',
-		'	for (int i=0; i<5; i++) {',
-		'		scale *= 2.;',
-		'		f += noise(uv * scale) / scale;',
-		'	}',
-		'	return f;',
-		'}',
-
 		'void main(void)',
 		'{',
 		'	vec2 uv = vUv;',
 			
 			// Formula: varience (smaller -> bigger cover) + speed (time) * direction
 			// normal thick clouds
-		'	vec3 ff1 = fNoise(uv * 0.01 + time * 0.0005 * vec2(-1., 1.));',
+		'	vec3 ff1 = fNoise(uv * 0.01 + time * 0.00015 * vec2(-1., 1.));',
 
 			// fast small clouds
-		'	vec3 ff2 = fNoise(uv * 0.1 + time * 0.002 * vec2(1., 1.));',
+		'	vec3 ff2 = fNoise(uv * 0.1 + time * 0.0005 * vec2(1., 1.));',
 			
 			// Different combinations of mixing
 		'	float t = ff1.x * 0.9 + ff1.y * 0.15;',
@@ -97,7 +81,6 @@ THREE.ShaderLib['cloud'] = {
 		'	o =  1. - o * o * o * o;',
 
 			// multiply by more cloud transparency
-		//'	o *= clouds;',
 		'	o -= (1. - t) * 0.95;', // factor clouds opacity based on cloud cover
 			// 1 t = 1 o
 			// depending on where this is placed, it will affect darkness / opacity of clouds
@@ -123,10 +106,9 @@ THREE.ShaderLib['cloud'] = {
 	].join('\n')
 };
 
-function CloudShader( renderer, noiseSize, cloudSize ) {
+function CloudShader( renderer, noiseSize ) {
 
 	noiseSize = noiseSize || 256;
-	cloudSize = cloudSize || 512;
 	
 	var cloudShader = THREE.ShaderLib['cloud'] ;
 
@@ -141,9 +123,10 @@ function CloudShader( renderer, noiseSize, cloudSize ) {
 	var dt = new THREE.DataTexture( data, noiseSize, noiseSize, THREE.RGBAFormat );
 	dt.wrapS = THREE.RepeatWrapping;
 	dt.wrapT = THREE.RepeatWrapping;
+	dt.magFilter = THREE.LinearFilter;
+	dt.minFilter = THREE.LinearFilter;
 	dt.needsUpdate = true;
 	
-	cloudShader.uniforms.resolution.value = new THREE.Vector2(cloudSize, cloudSize);
 	cloudShader.uniforms.texture.value = dt;
 
 	var noiseMaterial = new THREE.ShaderMaterial({
@@ -156,7 +139,7 @@ function CloudShader( renderer, noiseSize, cloudSize ) {
 
 	this.noiseMaterial = noiseMaterial;
 
-	var scamera, sscene, smesh, renderTarget;
+	var scamera, sscene, smesh;
 
 	scamera = new THREE.Camera();
 
@@ -167,16 +150,6 @@ function CloudShader( renderer, noiseSize, cloudSize ) {
 	smesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), noiseMaterial );
 
 	sscene.add(smesh);
-
-	renderTarget = new THREE.WebGLRenderTarget( cloudSize, cloudSize, {
-		wrapS: THREE.RepeatWrapping,
-		wrapT: THREE.RepeatWrapping,
-		minFilter: THREE.NearestFilter,
-		magFilter: THREE.NearestFilter,
-		format: THREE.RGBAFormat,
-		type: THREE.FloatType,
-		stencilBuffer: false
-	} );
 
 	function SkyDome(i, j) {
 		i -= 0.5;
