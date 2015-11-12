@@ -94,7 +94,8 @@ var DEMO =
 		this.ms_soundWaves = initSound( 'sound/waves.mp3' );
 		this.ms_soundRain = initSound( 'sound/rain.mp3' );
 		
-		this.ms_soundWaves.play();
+		if(!typeof this.ms_soundWaves === 'undefined') this.ms_soundWaves.play();
+		else console.log('Sound disabled due to licensing');
 		
 	},
 	
@@ -410,10 +411,12 @@ var DEMO =
 		this.ms_MainDirectionalLight.color.copy( directionalLightColor );
 		this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.copy( this.ms_MainDirectionalLight.position );
 		if ( raining ) {
-			this.ms_soundRain.play();
+			if(!typeof this.ms_soundRain === 'undefined') this.ms_soundRain.play();
+		else console.log('Sound disabled due to licensing');
 		}
 		else {
-			this.ms_soundRain.pause();
+			if(!typeof this.ms_soundRain === 'undefined') this.ms_soundRain.pause();
+		else console.log('Sound disabled due to licensing');
 		}
 		
 		var sources = [
